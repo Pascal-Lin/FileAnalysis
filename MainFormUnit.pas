@@ -31,12 +31,15 @@ type
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
-    ProgressBar1: TProgressBar;
+    MD5ProgressBar: TProgressBar;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
+    procedure StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
+      const Rect: TRect);
   private
+    ProgressBar: TProgressBar;
+    ProgressBarRect: TRect;
     { Private declarations }
-    procedure AnalyzeFile(FileName: string);
   public
     { Public declarations }
   end;
@@ -54,41 +57,8 @@ var
 
 {$R *.dfm}
 
-procedure TForm1.AnalyzeFile(FileName: string);
-var
-  Attr:integer;
-  ExitCode : cardinal;
-//  AnalyzeThread : TAnalyzeThd;
-begin
 
-  if trim(FileName) = '' then
-  begin
-    ShowMessage('指定文件不能为空！');
-    exit;
-  end;
 
-  if FileGetAttr(FileName) = -1 then
-  begin
-    ShowMessage('找不到文件'+FileName.QuotedString+'。');
-    exit;
-  end;
-
-//  cxTreeList1.Clear;
-//  Memo1.Lines.Clear;
-//  CopyMD5MenuItem.Enabled := false;
-//  mainFrm.cxTreeList1.Bands[0].Caption.text := BandsText+LangStr0;
-//  TAnalyzeThd.Create(FileName);
-
-//  if Assigned(Md5Thd) then
-//  begin
-//    if GetExitCodeThread(Md5Thd.Handle, ExitCode) then
-//    begin
-//      TerminateThread(Md5Thd.Handle,0);
-//      Md5Thd.Free;
-//    end;
-//  end;
-//  if ConfigFrm.CheckBox4.Checked then Md5Thd := TMd5Thd.Create(GetShortName(edit1.Text));
-end;
 
 procedure TForm1.OpenFileToolButtonClick(Sender: TObject);
 begin
@@ -110,6 +80,14 @@ begin
 //      memo1.Lines.Text := HeadInfo + #13 + LineStr + langStr4 + LineStr;
 //      if configfrm.CheckBox1.Checked then button2.Click;
     end;
+end;
+
+procedure TForm1.StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
+  const Rect: TRect);
+begin
+
+if Panel = StatusBar.Panels[1] then
+  ProgressBarRect := Rect;
 end;
 
 procedure TForm1.ToolButton2Click(Sender: TObject);
@@ -134,7 +112,8 @@ begin
       Md5Thd.Free;
     end;
   end;
-  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar1);
+
+  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, MD5ProgressBar);
 end;
 
 

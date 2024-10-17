@@ -15,14 +15,16 @@ object Form1: TForm1
   TextHeight = 17
   object Panel1: TPanel
     Left = 0
-    Top = 64
+    Top = 67
     Width = 612
-    Height = 356
+    Height = 353
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
+    ExplicitTop = 64
+    ExplicitHeight = 356
     object Splitter1: TSplitter
       Left = 0
       Top = 201
@@ -37,7 +39,7 @@ object Form1: TForm1
       Left = 0
       Top = 204
       Width = 612
-      Height = 152
+      Height = 149
       Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -67,6 +69,7 @@ object Form1: TForm1
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
+      ExplicitHeight = 152
     end
     object MessageRichEdit: TRichEdit
       Left = 0
@@ -86,13 +89,7 @@ object Form1: TForm1
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
-    end
-    object ProgressBar1: TProgressBar
-      Left = 308
-      Top = 176
-      Width = 261
-      Height = 19
-      TabOrder = 2
+      ExplicitTop = -3
     end
   end
   object ToolBar1: TToolBar
@@ -158,7 +155,22 @@ object Form1: TForm1
     Top = 420
     Width = 612
     Height = 19
-    Panels = <>
+    Panels = <
+      item
+        Width = 140
+      end
+      item
+        Width = 50
+      end>
+    OnDrawPanel = StatusBar1DrawPanel
+  end
+  object MD5ProgressBar: TProgressBar
+    Left = 0
+    Top = 64
+    Width = 612
+    Height = 3
+    Align = alTop
+    TabOrder = 3
   end
   object Icon40ImageList: TImageList
     ColorDepth = cd32Bit

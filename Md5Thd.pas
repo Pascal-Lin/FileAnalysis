@@ -12,7 +12,7 @@ type
     FFileName: string;
     FMessageRichEdit: TRichEdit;
     FProgressBar: TProgressBar;
-    procedure UpdateProgress(BytesRead: Int64; TotalBytes: Int64);
+    procedure UpdateProgress(Position: Integer);
     procedure UpdateMessage(Msg: string);
     { Private declarations }
   protected
@@ -41,6 +41,7 @@ begin
   Synchronize(procedure
     begin
       UpdateMessage('正在计算该文件的MD5码...');
+      UpdateProgress(0);
     end);
 //  老方法（引用md5.pas），可以实现进度条
 //  aidFileMD5 := MD5Print(FileToMD5(FileName, mainFRM.ShowProgress));
@@ -75,7 +76,7 @@ begin
             // 更新进度
             Synchronize(procedure
               begin
-                UpdateProgress(BytesRead, FileSize);
+                UpdateProgress(FProgressBar.Position + BytesRead);
               end);
           end;
         end;
@@ -87,6 +88,7 @@ begin
         begin
           // 输出最终结果
           UpdateMessage(FMD5Hash);
+          UpdateProgress(0);
         end);
 
       finally
@@ -107,9 +109,9 @@ begin
 end;
 
 
-procedure TMd5Thd.UpdateProgress(BytesRead: Int64; TotalBytes: Int64);
+procedure TMd5Thd.UpdateProgress(Position: integer);
 begin
-  FProgressBar.Position := FProgressBar.Position + BytesRead;
+  FProgressBar.Position := Position;
 end;
 
 procedure TMd5Thd.UpdateMessage(Msg: string);
