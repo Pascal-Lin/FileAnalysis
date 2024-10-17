@@ -8,7 +8,7 @@ uses
   Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons, System.Hash;
 
 type
-  TForm1 = class(TForm)
+  TMainForm = class(TForm)
     Panel1: TPanel;
     TrIDListView: TListView;
     Icon40ImageList: TImageList;
@@ -36,6 +36,7 @@ type
     procedure ToolButton2Click(Sender: TObject);
     procedure StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
       const Rect: TRect);
+    procedure FormCreate(Sender: TObject);
   private
     ProgressBar: TProgressBar;
     ProgressBarRect: TRect;
@@ -45,12 +46,12 @@ type
   end;
 
 var
-  Form1: TForm1;
+  MainForm: TMainForm;
 
 
 implementation
 
-uses AnalyzeThd, Md5Thd;
+uses AnalyzeThd, Md5Thd, TrIDLib;
 
 var
   Md5Thd : TMd5Thd;
@@ -60,7 +61,18 @@ var
 
 
 
-procedure TForm1.OpenFileToolButtonClick(Sender: TObject);
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+  TrID_DB_Count: Integer;
+  sOut: string;
+begin
+  TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
+  TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
+//  StatusBar1.Panels[0].Text := '当前TrID数据库含有 '+ TrID_DB_Count.ToString +' 个文件类型。'
+  MessageRichEdit.Lines.Add('当前TrID数据库含有 '+ TrID_DB_Count.ToString +' 个文件类型。')
+end;
+
+procedure TMainForm.OpenFileToolButtonClick(Sender: TObject);
 begin
     if OpenDialog1.execute then
     begin
@@ -82,7 +94,7 @@ begin
     end;
 end;
 
-procedure TForm1.StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
+procedure TMainForm.StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
   const Rect: TRect);
 begin
 
@@ -90,7 +102,7 @@ if Panel = StatusBar.Panels[1] then
   ProgressBarRect := Rect;
 end;
 
-procedure TForm1.ToolButton2Click(Sender: TObject);
+procedure TMainForm.ToolButton2Click(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
   begin

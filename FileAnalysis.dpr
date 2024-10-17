@@ -2,7 +2,7 @@ program FileAnalysis;
 
 uses
   Vcl.Forms,
-  MainFormUnit in 'MainFormUnit.pas' {Form1},
+  MainFormUnit in 'MainFormUnit.pas' {MainForm},
   Vcl.Themes,
   Vcl.Styles,
   AnalyzeThd in 'AnalyzeThd.pas',
@@ -14,6 +14,6 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

@@ -1,7 +1,7 @@
-object Form1: TForm1
+object MainForm: TMainForm
   Left = 817
   Top = 498
-  Caption = 'Form1'
+  Caption = 'FileAnalysis 3.0'
   ClientHeight = 439
   ClientWidth = 612
   Color = clBtnFace
@@ -12,12 +12,13 @@ object Form1: TForm1
   Font.Style = []
   Menu = MainMenu1
   Position = poDesigned
+  OnCreate = FormCreate
   TextHeight = 17
   object Panel1: TPanel
     Left = 0
-    Top = 67
+    Top = 66
     Width = 612
-    Height = 353
+    Height = 354
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
@@ -39,7 +40,7 @@ object Form1: TForm1
       Left = 0
       Top = 204
       Width = 612
-      Height = 149
+      Height = 150
       Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -69,7 +70,7 @@ object Form1: TForm1
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
-      ExplicitHeight = 152
+      ExplicitTop = 207
     end
     object MessageRichEdit: TRichEdit
       Left = 0
@@ -157,10 +158,7 @@ object Form1: TForm1
     Height = 19
     Panels = <
       item
-        Width = 140
-      end
-      item
-        Width = 50
+        Width = 0
       end>
     OnDrawPanel = StatusBar1DrawPanel
   end
@@ -168,7 +166,7 @@ object Form1: TForm1
     Left = 0
     Top = 64
     Width = 612
-    Height = 3
+    Height = 2
     Align = alTop
     TabOrder = 3
   end
@@ -177,8 +175,8 @@ object Form1: TForm1
     DrawingStyle = dsTransparent
     Height = 40
     Width = 60
-    Left = 416
-    Top = 304
+    Left = 512
+    Top = 8
     Bitmap = {
       494C01010500080004003C002800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000F0000000500000000100200000000000002C
@@ -2668,7 +2666,7 @@ object Form1: TForm1
       000000000000}
   end
   object MainMenu1: TMainMenu
-    Left = 408
+    Left = 448
     Top = 8
     object F1: TMenuItem
       Caption = #25991#20214'(&F)'
@@ -2688,8 +2686,8 @@ object Form1: TForm1
     DrawingStyle = dsTransparent
     Height = 32
     Width = 32
-    Left = 464
-    Top = 304
+    Left = 544
+    Top = 8
     Bitmap = {
       494C010103000800040020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
@@ -3228,8 +3226,8 @@ object Form1: TForm1
   end
   object UpdatePopupMenu: TPopupMenu
     Images = Icon32ImageList
-    Left = 512
-    Top = 304
+    Left = 576
+    Top = 8
     object U1: TMenuItem
       Caption = #26356#26032#25968#25454#24211'(&U)'
       ImageIndex = 0
@@ -3240,7 +3238,7 @@ object Form1: TForm1
     end
   end
   object OpenDialog1: TOpenDialog
-    Left = 456
+    Left = 480
     Top = 8
   end
 end

@@ -11,13 +11,11 @@ type
     FileName: string;
     MessageRichEdit: TRichEdit;
     TrIDListView: TListView;
-//    procedure WriteLog;
     procedure UpdateShow;
     function GetFileSize(const FileName: String): LongInt;
     { Private declarations }
   protected
     procedure Execute; override;
-//    procedure LogClear;
   public
     constructor Create(FileName: string; MessageRichEdit: TRichEdit; TrIDListView: TListView);
   end;
@@ -49,15 +47,15 @@ var
   AllPoint:integer;
   TrID_DB_Count: Integer;
 begin
-
+  // TODO Synchronize
 //  MessageRichEdit.Lines.Add('FileAnalysis 准备就绪');
 //  MessageRichEdit.Add(datetimetostr(now));
 //  MessageRichEdit.Lines.Add('');
   AllPoint := 0;
-  MessageRichEdit.Lines.Add('正在加载TrID数据库...');
+  MessageRichEdit.Lines.Add('正在检测TrID数据库...');
   TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
   TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
-  MessageRichEdit.Lines.Add('找到文件类型总计：' + IntToStr(TrID_DB_Count));
+  MessageRichEdit.Lines.Add('找到共计 '+ TrID_DB_Count.ToString +' 个文件类型。');
 
   MessageRichEdit.Lines.Add('准备分析目标文件：' + FileName + '');
   TrIDLib.SubmitFileA(FileName); // submit the file
