@@ -54,7 +54,7 @@ begin
 //  MessageRichEdit.Add(datetimetostr(now));
 //  MessageRichEdit.Lines.Add('');
   AllPoint := 0;
-  MessageRichEdit.Lines.Add('加载数据库...');
+  MessageRichEdit.Lines.Add('正在加载TrID数据库...');
   TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
   TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
   MessageRichEdit.Lines.Add('找到文件类型总计：' + IntToStr(TrID_DB_Count));

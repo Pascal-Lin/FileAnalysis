@@ -6,7 +6,8 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   AnalyzeThd in 'AnalyzeThd.pas',
-  TrIDLib in 'TrIDLib.pas';
+  TrIDLib in 'TrIDLib.pas',
+  Md5Thd in 'Md5Thd.pas';
 
 {$R *.res}
 

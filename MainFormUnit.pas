@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons;
+  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons, System.Hash;
 
 type
   TForm1 = class(TForm)
@@ -31,7 +31,9 @@ type
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
+    ProgressBar1: TProgressBar;
     procedure OpenFileToolButtonClick(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile(FileName: string);
@@ -42,9 +44,13 @@ type
 var
   Form1: TForm1;
 
+
 implementation
 
-uses AnalyzeThd;
+uses AnalyzeThd, Md5Thd;
+
+var
+  Md5Thd : TMd5Thd;
 
 {$R *.dfm}
 
@@ -105,5 +111,32 @@ begin
 //      if configfrm.CheckBox1.Checked then button2.Click;
     end;
 end;
+
+procedure TForm1.ToolButton2Click(Sender: TObject);
+begin
+  if trim(OpenDialog1.FileName) = '' then
+  begin
+    ShowMessage('请先打开一个文件！');
+    exit;
+  end;
+
+  if FileGetAttr(OpenDialog1.FileName) = -1 then
+  begin
+    ShowMessage('找不到文件' + OpenDialog1.FileName);
+    exit;
+  end;
+
+  if Assigned(Md5Thd) then
+  begin
+    if GetExitCodeThread(Md5Thd.Handle, DWORD(ExitCode)) then
+    begin
+      TerminateThread(Md5Thd.Handle,0);
+      Md5Thd.Free;
+    end;
+  end;
+  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar1);
+end;
+
+
 
 end.

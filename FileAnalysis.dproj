@@ -132,6 +132,7 @@
         </DCCReference>
         <DCCReference Include="AnalyzeThd.pas"/>
         <DCCReference Include="TrIDLib.pas"/>
+        <DCCReference Include="Md5Thd.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

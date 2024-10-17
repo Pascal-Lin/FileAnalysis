@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 817
   Top = 498
   Caption = 'Form1'
-  ClientHeight = 355
+  ClientHeight = 439
   ClientWidth = 612
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -17,16 +17,15 @@ object Form1: TForm1
     Left = 0
     Top = 64
     Width = 612
-    Height = 272
+    Height = 356
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 639
     object Splitter1: TSplitter
       Left = 0
-      Top = 105
+      Top = 201
       Width = 612
       Height = 3
       Cursor = crVSplit
@@ -36,9 +35,9 @@ object Form1: TForm1
     end
     object TrIDListView: TListView
       Left = 0
-      Top = 108
+      Top = 204
       Width = 612
-      Height = 164
+      Height = 152
       Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -73,7 +72,7 @@ object Form1: TForm1
       Left = 0
       Top = 0
       Width = 612
-      Height = 105
+      Height = 201
       Align = alTop
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -88,7 +87,13 @@ object Form1: TForm1
       ScrollBars = ssVertical
       TabOrder = 1
       ExplicitTop = -3
-      ExplicitWidth = 639
+    end
+    object ProgressBar1: TProgressBar
+      Left = 308
+      Top = 176
+      Width = 261
+      Height = 19
+      TabOrder = 2
     end
   end
   object ToolBar1: TToolBar
@@ -114,8 +119,6 @@ object Form1: TForm1
     ShowCaptions = True
     TabOrder = 1
     StyleElements = []
-    ExplicitTop = -6
-    ExplicitWidth = 639
     object OpenFileToolButton: TToolButton
       Left = 0
       Top = 0
@@ -129,6 +132,7 @@ object Form1: TForm1
       Top = 0
       Caption = 'MD5'
       ImageIndex = 1
+      OnClick = ToolButton2Click
     end
     object ToolButton3: TToolButton
       Left = 134
@@ -152,11 +156,10 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 336
+    Top = 420
     Width = 612
     Height = 19
     Panels = <>
-    ExplicitWidth = 639
   end
   object Icon40ImageList: TImageList
     ColorDepth = cd32Bit
