@@ -10,7 +10,7 @@ uses
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
-    ListViewTrIDResult: TListView;
+    TrIDListView: TListView;
     Icon40ImageList: TImageList;
     MainMenu1: TMainMenu;
     F1: TMenuItem;
@@ -27,13 +27,14 @@ type
     UpdatePopupMenu: TPopupMenu;
     U1: TMenuItem;
     N2: TMenuItem;
-    RichEdit1: TRichEdit;
+    MessageRichEdit: TRichEdit;
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
     procedure OpenFileToolButtonClick(Sender: TObject);
   private
     { Private declarations }
+    procedure AnalyzeFile(FileName: string);
   public
     { Public declarations }
   end;
@@ -43,15 +44,63 @@ var
 
 implementation
 
+uses AnalyzeThd;
+
 {$R *.dfm}
+
+procedure TForm1.AnalyzeFile(FileName: string);
+var
+  Attr:integer;
+  ExitCode : cardinal;
+//  AnalyzeThread : TAnalyzeThd;
+begin
+
+  if trim(FileName) = '' then
+  begin
+    ShowMessage('指定文件不能为空！');
+    exit;
+  end;
+
+  if FileGetAttr(FileName) = -1 then
+  begin
+    ShowMessage('找不到文件'+FileName.QuotedString+'。');
+    exit;
+  end;
+
+//  cxTreeList1.Clear;
+//  Memo1.Lines.Clear;
+//  CopyMD5MenuItem.Enabled := false;
+//  mainFrm.cxTreeList1.Bands[0].Caption.text := BandsText+LangStr0;
+//  TAnalyzeThd.Create(FileName);
+
+//  if Assigned(Md5Thd) then
+//  begin
+//    if GetExitCodeThread(Md5Thd.Handle, ExitCode) then
+//    begin
+//      TerminateThread(Md5Thd.Handle,0);
+//      Md5Thd.Free;
+//    end;
+//  end;
+//  if ConfigFrm.CheckBox4.Checked then Md5Thd := TMd5Thd.Create(GetShortName(edit1.Text));
+end;
 
 procedure TForm1.OpenFileToolButtonClick(Sender: TObject);
 begin
     if OpenDialog1.execute then
     begin
 
-//      edit1.Text:=OpenDialog1.Filename;
-      TrIDResultListView.Clear;
+      if FileGetAttr(OpenDialog1.FileName) = -1 then
+      begin
+        ShowMessage('找不到文件' + OpenDialog1.FileName);
+        exit;
+      end;
+
+      MessageRichEdit.Clear;
+      TrIDListView.Clear;
+
+      // 创建文件分析线程
+      TAnalyzeThd.Create(OpenDialog1.FileName, MessageRichEdit, TrIDListView);
+
 //      memo1.Lines.Text := HeadInfo + #13 + LineStr + langStr4 + LineStr;
 //      if configfrm.CheckBox1.Checked then button2.Click;
     end;

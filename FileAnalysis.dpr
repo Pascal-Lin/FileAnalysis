@@ -4,7 +4,9 @@ uses
   Vcl.Forms,
   MainFormUnit in 'MainFormUnit.pas' {Form1},
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  AnalyzeThd in 'AnalyzeThd.pas',
+  TrIDLib in 'TrIDLib.pas';
 
 {$R *.res}
 

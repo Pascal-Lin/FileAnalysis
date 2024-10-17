@@ -26,6 +26,6 @@ Coordinates=126,80,68,33
 [Icon40ImageList]
 Coordinates=209,265,68,33
 
-[ListViewTrIDResult]
+[TrIDListView]
 Coordinates=10,10,97,231
 

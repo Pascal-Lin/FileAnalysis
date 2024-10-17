@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 498
   Caption = 'Form1'
   ClientHeight = 355
-  ClientWidth = 639
+  ClientWidth = 612
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
@@ -16,26 +16,28 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 64
-    Width = 639
+    Width = 612
     Height = 272
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
+    ExplicitWidth = 639
     object Splitter1: TSplitter
       Left = 0
       Top = 105
-      Width = 639
+      Width = 612
       Height = 3
       Cursor = crVSplit
       Align = alTop
       ExplicitTop = 73
+      ExplicitWidth = 639
     end
-    object ListViewTrIDResult: TListView
+    object TrIDListView: TListView
       Left = 0
       Top = 108
-      Width = 639
+      Width = 612
       Height = 164
       Align = alClient
       BevelInner = bvNone
@@ -44,10 +46,13 @@ object Form1: TForm1
       Columns = <
         item
           Caption = #27010#29575
+          MinWidth = 80
+          Width = 80
         end
         item
           Caption = #25193#23637#21517
-          Width = 80
+          MinWidth = 100
+          Width = 100
         end
         item
           AutoSize = True
@@ -55,27 +60,19 @@ object Form1: TForm1
         end
         item
           Caption = 'Pts'
+          Width = 100
         end>
       ColumnClick = False
       GridLines = True
-      Items.ItemData = {
-        05C30000000400000000000000FFFFFFFFFFFFFFFF03000000FFFFFFFF000000
-        000282698773013200C843A21F013300583CA21F013400A038A21F00000000FF
-        FFFFFFFFFFFFFF03000000FFFFFFFF000000000132000132004034A21F013300
-        E03DA21F0134009043A21F00000000FFFFFFFFFFFFFFFF03000000FFFFFFFF00
-        000000013500013600403BA21F0237003800D033A21F013300A83DA21F000000
-        00FFFFFFFFFFFFFFFF00000000FFFFFFFF0000000000FFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFF}
       ReadOnly = True
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
-      ExplicitTop = 111
     end
-    object RichEdit1: TRichEdit
+    object MessageRichEdit: TRichEdit
       Left = 0
       Top = 0
-      Width = 639
+      Width = 612
       Height = 105
       Align = alTop
       BevelInner = bvNone
@@ -86,19 +83,18 @@ object Form1: TForm1
       Font.Height = -12
       Font.Name = #24494#36719#38597#40657
       Font.Style = []
-      Lines.Strings = (
-        'RichEdit1')
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
       ExplicitTop = -3
+      ExplicitWidth = 639
     end
   end
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 639
+    Width = 612
     Height = 64
     AutoSize = True
     ButtonHeight = 64
@@ -119,6 +115,7 @@ object Form1: TForm1
     TabOrder = 1
     StyleElements = []
     ExplicitTop = -6
+    ExplicitWidth = 639
     object OpenFileToolButton: TToolButton
       Left = 0
       Top = 0
@@ -156,9 +153,10 @@ object Form1: TForm1
   object StatusBar1: TStatusBar
     Left = 0
     Top = 336
-    Width = 639
+    Width = 612
     Height = 19
     Panels = <>
+    ExplicitWidth = 639
   end
   object Icon40ImageList: TImageList
     ColorDepth = cd32Bit
@@ -3228,7 +3226,7 @@ object Form1: TForm1
     end
   end
   object OpenDialog1: TOpenDialog
-    Left = 448
+    Left = 456
     Top = 8
   end
 end
