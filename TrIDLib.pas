@@ -1,4 +1,4 @@
-// TrIDLib wrapper Unit
+﻿// TrIDLib wrapper Unit
 // http://mark0.ne/code-tridlib-e.html
 
 unit TrIDLib;

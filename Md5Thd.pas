@@ -1,4 +1,4 @@
-unit Md5Thd;
+ï»¿unit Md5Thd;
 
 interface
 
@@ -8,7 +8,7 @@ uses
 type
   TMd5Thd = class(TThread)
   private
-    FMD5Hash: string; // ±£´æÎÄ¼ş×îÖÕµÄmd5Öµ
+    FMD5Hash: string; // ä¿å­˜æ–‡ä»¶æœ€ç»ˆçš„md5å€¼
     FFileName: string;
     FMessageRichEdit: TRichEdit;
     FProgressBar: TProgressBar;
@@ -27,22 +27,22 @@ implementation
 
 constructor TMd5Thd.Create(AFileName: string; AMessageRichEdit: TRichEdit; AProgressBar: TProgressBar);
 begin
-  FFileName := AFileName;   //´«µİÄ¿±êÎÄ¼ş¸øaidFileË½ÓĞ±äÁ¿
+  FFileName := AFileName;   //ä¼ é€’ç›®æ ‡æ–‡ä»¶ç»™aidFileç§æœ‰å˜é‡
   FMessageRichEdit := AMessageRichEdit;
   FProgressBar := AProgressBar;
 
   FreeOnTerminate := false;
-  inherited Create(false);  //´´½¨ºóÁ¢¼´Ö´ĞĞexecuteº¯Êı
+  inherited Create(false);  //åˆ›å»ºåç«‹å³æ‰§è¡Œexecuteå‡½æ•°
 end;
 
 procedure TMd5Thd.Execute;
 begin
-  // ¸üĞÂÌáÊ¾
+  // æ›´æ–°æç¤º
   Synchronize(procedure
     begin
-      UpdateMessage('ÕıÔÚ¼ÆËã¸ÃÎÄ¼şµÄMD5Âë...');
+      UpdateMessage('æ­£åœ¨è®¡ç®—è¯¥æ–‡ä»¶çš„MD5ç ...');
     end);
-//  ÀÏ·½·¨£¨ÒıÓÃmd5.pas£©£¬¿ÉÒÔÊµÏÖ½ø¶ÈÌõ
+//  è€æ–¹æ³•ï¼ˆå¼•ç”¨md5.pasï¼‰ï¼Œå¯ä»¥å®ç°è¿›åº¦æ¡
 //  aidFileMD5 := MD5Print(FileToMD5(FileName, mainFRM.ShowProgress));
 //  mainFrm.cxTreeList1.Bands[0].Caption.text := BandsText+ aidFileMD5;
 //  var MD5String := GetFileMD5(FileName);
@@ -52,7 +52,7 @@ begin
   FMD5Hash := '';
   try
     var FileStream: TFileStream;
-    // ³¢ÊÔÒÔ¹²ÏíÄ£Ê½´ò¿ªÎÄ¼ş
+    // å°è¯•ä»¥å…±äº«æ¨¡å¼æ‰“å¼€æ–‡ä»¶
     FileStream := TFileStream.Create(FFileName, fmOpenRead or fmShareDenyWrite);
     try
       var FileSize: Int64;
@@ -60,10 +60,10 @@ begin
       FProgressBar.Max := FileSize;
 
       var Buffer: TBytes;
-      SetLength(Buffer, 4096); // ÉèÖÃ»º³åÇø´óĞ¡
+      SetLength(Buffer, 4096); // è®¾ç½®ç¼“å†²åŒºå¤§å°
 
       var MD5: THashMD5;
-      MD5 := THashMD5.Create; // ³õÊ¼»¯ MD5 ¶ÔÏó
+      MD5 := THashMD5.Create; // åˆå§‹åŒ– MD5 å¯¹è±¡
       try
         var BytesRead: Integer;
         while FileStream.Position < FileSize do
@@ -72,7 +72,7 @@ begin
           if BytesRead > 0 then
           begin
             MD5.Update(Buffer, BytesRead);
-            // ¸üĞÂ½ø¶È
+            // æ›´æ–°è¿›åº¦
             Synchronize(procedure
               begin
                 UpdateProgress(BytesRead, FileSize);
@@ -80,12 +80,12 @@ begin
           end;
         end;
 
-      // »ñÈ¡ MD5 ¹şÏ£×Ö½Ú
-      FMD5Hash := MD5.HashAsString; // »ñÈ¡¹şÏ£×Ö·û´®
-      // ¸üĞÂÌáÊ¾
+      // è·å– MD5 å“ˆå¸Œå­—èŠ‚
+      FMD5Hash := MD5.HashAsString; // è·å–å“ˆå¸Œå­—ç¬¦ä¸²
+      // æ›´æ–°æç¤º
       Synchronize(procedure
         begin
-          // Êä³ö×îÖÕ½á¹û
+          // è¾“å‡ºæœ€ç»ˆç»“æœ
           UpdateMessage(FMD5Hash);
         end);
 
@@ -96,10 +96,10 @@ begin
     end;
   except
     on E: Exception do
-      // ¸üĞÂÌáÊ¾
+      // æ›´æ–°æç¤º
       Synchronize(procedure
         begin
-          UpdateMessage('ÎŞ·¨¶ÁÈ¡ÎÄ¼ş£º' + E.Message);
+          UpdateMessage('æ— æ³•è¯»å–æ–‡ä»¶ï¼š' + E.Message);
         end);
   end;
 

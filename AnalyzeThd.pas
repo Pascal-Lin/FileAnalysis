@@ -1,4 +1,4 @@
-unit AnalyzeThd;
+ï»¿unit AnalyzeThd;
 
 interface
 
@@ -34,7 +34,7 @@ begin
   Self.TrIDListView := TrIDListView;
 
   FreeOnTerminate := True;
-  inherited Create(false);  //´´½¨ºóÁ¢¼´Ö´ĞĞexecuteº¯Êı
+  inherited Create(false);  //åˆ›å»ºåç«‹å³æ‰§è¡Œexecuteå‡½æ•°
 end;
 
 procedure TAnalyzeThd.Execute;
@@ -50,19 +50,19 @@ var
   TrID_DB_Count: Integer;
 begin
 
-//  MessageRichEdit.Lines.Add('FileAnalysis ×¼±¸¾ÍĞ÷');
+//  MessageRichEdit.Lines.Add('FileAnalysis å‡†å¤‡å°±ç»ª');
 //  MessageRichEdit.Add(datetimetostr(now));
 //  MessageRichEdit.Lines.Add('');
   AllPoint := 0;
-  MessageRichEdit.Lines.Add('ÕıÔÚ¼ÓÔØTrIDÊı¾İ¿â...');
+  MessageRichEdit.Lines.Add('æ­£åœ¨åŠ è½½TrIDæ•°æ®åº“...');
   TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
   TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
-  MessageRichEdit.Lines.Add('ÕÒµ½ÎÄ¼şÀàĞÍ×Ü¼Æ£º' + IntToStr(TrID_DB_Count));
+  MessageRichEdit.Lines.Add('æ‰¾åˆ°æ–‡ä»¶ç±»å‹æ€»è®¡ï¼š' + IntToStr(TrID_DB_Count));
 
-  MessageRichEdit.Lines.Add('×¼±¸·ÖÎöÄ¿±êÎÄ¼ş£º' + FileName + '');
+  MessageRichEdit.Lines.Add('å‡†å¤‡åˆ†æç›®æ ‡æ–‡ä»¶ï¼š' + FileName + '');
   TrIDLib.SubmitFileA(FileName); // submit the file
 
-  MessageRichEdit.Lines.Add('ÕıÔÚÆ¥ÅäTrIDÊı¾İ¿â...');
+  MessageRichEdit.Lines.Add('æ­£åœ¨åŒ¹é…TrIDæ•°æ®åº“...');
   ret := TrIDLib.TrID_Analyze();     // perform the analysis
 
   if ret <> 0 then
@@ -71,24 +71,24 @@ begin
     if ResNum = 0 then
     begin
       MessageRichEdit.Lines.Add('');
-      MessageRichEdit.Lines.Add('¸ÃÎÄ¼şÔÚÊı¾İ¿âÖĞÆ¥Åä²»µ½Ïà¹ØĞÅÏ¢£¬½¨ÒéÒÔÏÂ²Ù×÷£º');
-      MessageRichEdit.Lines.Add('1.ÓÃÎÄ±¾±à¼­Æ÷²é¿´¸ÃÎÄ¼ş¡£');
-      MessageRichEdit.Lines.Add('2.¸üĞÂµ½×îĞÂµÄTrIDÊı¾İ¿â¡£');
+      MessageRichEdit.Lines.Add('è¯¥æ–‡ä»¶åœ¨æ•°æ®åº“ä¸­åŒ¹é…ä¸åˆ°ç›¸å…³ä¿¡æ¯ï¼Œå»ºè®®ä»¥ä¸‹æ“ä½œï¼š');
+      MessageRichEdit.Lines.Add('1.ç”¨æ–‡æœ¬ç¼–è¾‘å™¨æŸ¥çœ‹è¯¥æ–‡ä»¶ã€‚');
+      MessageRichEdit.Lines.Add('2.æ›´æ–°åˆ°æœ€æ–°çš„TrIDæ•°æ®åº“ã€‚');
 
       if (GetFileSize(FileName) div 1024 > 1024) then
       begin
-        // ÎÄ¼ş³¬¹ı1M£¬²»½¨ÒéÓÃ¼ÇÊÂ±¾´ò¿ª
-        Application.MessageBox(PChar('¸ÃÎÄ¼şÔÚÊı¾İ¿âÖĞÆ¥Åä²»µ½Ïà¹ØĞÅÏ¢£¬½¨ÒéÒÔÏÂ²Ù×÷£º' + #13
-            + '1.¸üĞÂµ½×îĞÂµÄTrIDÊı¾İ¿â¡£'),
-            PChar('ÌáÊ¾'),
+        // æ–‡ä»¶è¶…è¿‡1Mï¼Œä¸å»ºè®®ç”¨è®°äº‹æœ¬æ‰“å¼€
+        Application.MessageBox(PChar('è¯¥æ–‡ä»¶åœ¨æ•°æ®åº“ä¸­åŒ¹é…ä¸åˆ°ç›¸å…³ä¿¡æ¯ï¼Œå»ºè®®ä»¥ä¸‹æ“ä½œï¼š' + #13
+            + '1.æ›´æ–°åˆ°æœ€æ–°çš„TrIDæ•°æ®åº“ã€‚'),
+            PChar('æç¤º'),
             MB_OK);
       end else begin
-        //ÊÇ·ñÓÃ¼ÇÊÂ±¾´ò¿ª
-        if ID_YES = Application.MessageBox(PChar('¸ÃÎÄ¼şÔÚÊı¾İ¿âÖĞÆ¥Åä²»µ½Ïà¹ØĞÅÏ¢£¬½¨ÒéÒÔÏÂ²Ù×÷£º' + #13
-              + '1.ÓÃÎÄ±¾±à¼­Æ÷²é¿´¸ÃÎÄ¼ş¡£' + #13
-              + '2.¸üĞÂµ½×îĞÂµÄTrIDÊı¾İ¿â¡£' + #13
-              + 'ÊÇ·ñÓÃ¼ÇÊÂ±¾´ò¿ªÕâ¸öÎÄ¼ş½øĞĞ²é¿´£¿'),
-              PChar('ÌáÊ¾'),
+        //æ˜¯å¦ç”¨è®°äº‹æœ¬æ‰“å¼€
+        if ID_YES = Application.MessageBox(PChar('è¯¥æ–‡ä»¶åœ¨æ•°æ®åº“ä¸­åŒ¹é…ä¸åˆ°ç›¸å…³ä¿¡æ¯ï¼Œå»ºè®®ä»¥ä¸‹æ“ä½œï¼š' + #13
+              + '1.ç”¨æ–‡æœ¬ç¼–è¾‘å™¨æŸ¥çœ‹è¯¥æ–‡ä»¶ã€‚' + #13
+              + '2.æ›´æ–°åˆ°æœ€æ–°çš„TrIDæ•°æ®åº“ã€‚' + #13
+              + 'æ˜¯å¦ç”¨è®°äº‹æœ¬æ‰“å¼€è¿™ä¸ªæ–‡ä»¶è¿›è¡ŒæŸ¥çœ‹ï¼Ÿ'),
+              PChar('æç¤º'),
               MB_YESNO + MB_SYSTEMMODAL) then
         begin
           ShellExecute(0,nil, PChar('notepad.exe'), PChar(FileName), nil,SW_NORMAL);
@@ -97,9 +97,9 @@ begin
 
     end else
     begin
-      MessageRichEdit.Lines.Add('Æ¥Åäµ½ ' + ResNum.ToString + ' ¸öÀàĞÍ£¬¿ªÊ¼µ¼³ö½á¹ûµ½±í¸ñ...');
+      MessageRichEdit.Lines.Add('åŒ¹é…åˆ° ' + ResNum.ToString + ' ä¸ªç±»å‹ï¼Œå¼€å§‹å¯¼å‡ºç»“æœåˆ°è¡¨æ ¼...');
 
-//    £¨¿ÉÑ¡£©¿ØÖÆÏÔÊ¾ÊıÁ¿
+//    ï¼ˆå¯é€‰ï¼‰æ§åˆ¶æ˜¾ç¤ºæ•°é‡
 //      if strtoint(ConfigFrm.Edit1.Text) < ResNum then ResNum := strtoint(ConfigFrm.Edit1.Text);
 
 
@@ -127,7 +127,7 @@ begin
       end;
 
     end;
-    MessageRichEdit.Lines.Add('·ÖÎöÍê³É¡£');
+    MessageRichEdit.Lines.Add('åˆ†æå®Œæˆã€‚');
 //    if ConfigFrm.Checkbox2.Checked then WriteLog;
   end;
 

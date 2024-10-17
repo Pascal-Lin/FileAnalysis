@@ -86,7 +86,6 @@ object Form1: TForm1
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitTop = -3
     end
     object ProgressBar1: TProgressBar
       Left = 308

@@ -1,4 +1,4 @@
-unit MainFormUnit;
+ï»¿unit MainFormUnit;
 
 interface
 
@@ -63,13 +63,13 @@ begin
 
   if trim(FileName) = '' then
   begin
-    ShowMessage('Ö¸¶¨ÎÄ¼ş²»ÄÜÎª¿Õ£¡');
+    ShowMessage('æŒ‡å®šæ–‡ä»¶ä¸èƒ½ä¸ºç©ºï¼');
     exit;
   end;
 
   if FileGetAttr(FileName) = -1 then
   begin
-    ShowMessage('ÕÒ²»µ½ÎÄ¼ş'+FileName.QuotedString+'¡£');
+    ShowMessage('æ‰¾ä¸åˆ°æ–‡ä»¶'+FileName.QuotedString+'ã€‚');
     exit;
   end;
 
@@ -97,14 +97,14 @@ begin
 
       if FileGetAttr(OpenDialog1.FileName) = -1 then
       begin
-        ShowMessage('ÕÒ²»µ½ÎÄ¼ş' + OpenDialog1.FileName);
+        ShowMessage('æ‰¾ä¸åˆ°æ–‡ä»¶' + OpenDialog1.FileName);
         exit;
       end;
 
       MessageRichEdit.Clear;
       TrIDListView.Clear;
 
-      // ´´½¨ÎÄ¼ş·ÖÎöÏß³Ì
+      // åˆ›å»ºæ–‡ä»¶åˆ†æçº¿ç¨‹
       TAnalyzeThd.Create(OpenDialog1.FileName, MessageRichEdit, TrIDListView);
 
 //      memo1.Lines.Text := HeadInfo + #13 + LineStr + langStr4 + LineStr;
@@ -116,13 +116,13 @@ procedure TForm1.ToolButton2Click(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
   begin
-    ShowMessage('ÇëÏÈ´ò¿ªÒ»¸öÎÄ¼ş£¡');
+    ShowMessage('è¯·å…ˆæ‰“å¼€ä¸€ä¸ªæ–‡ä»¶ï¼');
     exit;
   end;
 
   if FileGetAttr(OpenDialog1.FileName) = -1 then
   begin
-    ShowMessage('ÕÒ²»µ½ÎÄ¼ş' + OpenDialog1.FileName);
+    ShowMessage('æ‰¾ä¸åˆ°æ–‡ä»¶' + OpenDialog1.FileName);
     exit;
   end;
 
