@@ -37,6 +37,7 @@ end;
 
 procedure TAnalyzeThd.Execute;
 begin
+//  FIXME  线程问题
   Synchronize(UpdateShow);
 end;
 

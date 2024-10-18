@@ -32,7 +32,7 @@ type
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
-    MD5ProgressBar: TProgressBar;
+    ProgressBar: TProgressBar;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -115,7 +115,7 @@ begin
     end;
   end;
 
-  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, MD5ProgressBar);
+  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar);
 end;
 
 
@@ -134,8 +134,8 @@ begin
     procedure(AWorkCount, AWorkCountMax: Int64)
     begin
       // 这里处理更新过程中的进度条显示
-      MD5ProgressBar.Max := AWorkCountMax;
-      MD5ProgressBar.Position := AWorkCount;
+      ProgressBar.Max := AWorkCountMax;
+      ProgressBar.Position := AWorkCount;
 //      MessageRichEdit.Lines.Add(AWorkCount.ToString+' / '+AWorkCountMax.ToString);
     end,
 
@@ -143,6 +143,14 @@ begin
     procedure
     begin
       // 这里处理更新的逻辑
+
+
+      // 在这里更新进度条，否则每个IF都要更新
+      // 进度条还没跑满就会归零，取消smooth属性也不行
+      // 临时解决方案：
+      // 1·在子线程回调之前Sleep(1000)
+      // 2·让进度条初始进度为100%
+      ProgressBar.Position := 0;
 
       var RemoteTrIDDefsNum: Integer;
       if not TryStrToInt(UpdateTrIDDefs.TRIDDEFSNUM, RemoteTrIDDefsNum) then
@@ -153,6 +161,8 @@ begin
       end;
 
 
+
+// TODO 子线程调用
       var LocalTrIDDefsNum: Integer;
       var sOut: string;
       TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
@@ -177,26 +187,30 @@ begin
       MessageRichEdit.Lines.Add(Msg);
       MessageRichEdit.Lines.Add('正在更新...');
 
-//      MD5ProgressBar.Position := 0; // 进度条还没跑满就会归零，取消smooth属性也不行
-
       // 下载数据库文件
       UpdateTrIDDefs.DownloadTrIDDefs(
         procedure(AWorkCount, AWorkCountMax: Int64)
         begin
           // 这里处理更新过程中的进度条显示
 
-//          if MD5ProgressBar.Max <> AWorkCountMax then
+//          if ProgressBar.Max <> AWorkCountMax then
           begin
-            MD5ProgressBar.Max := AWorkCountMax;
+            ProgressBar.Max := AWorkCountMax;
           end;
 
-          MD5ProgressBar.Position := AWorkCount;
+          ProgressBar.Position := AWorkCount;
 //          MessageRichEdit.Lines.Add(AWorkCount.ToString+' / '+AWorkCountMax.ToString);
         end,
         procedure
         begin
           MessageRichEdit.Lines.Add('TrID数据库更新完成！');
-//          MD5ProgressBar.Position := 0; // 进度条还没跑满就会归零，取消smooth属性也不行
+
+          // 进度条还没跑满就会归零，取消smooth属性也不行
+          // 临时解决方案：
+          // 1·在子线程回调之前Sleep(1000)
+          // 2·让进度条初始进度为100%
+          ProgressBar.Position := 0;
+
         end
       );
     end

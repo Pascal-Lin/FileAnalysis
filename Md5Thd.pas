@@ -43,12 +43,6 @@ begin
       UpdateMessage('正在计算该文件的MD5码...');
       UpdateProgress(0);
     end);
-//  老方法（引用md5.pas），可以实现进度条
-//  aidFileMD5 := MD5Print(FileToMD5(FileName, mainFRM.ShowProgress));
-//  mainFrm.cxTreeList1.Bands[0].Caption.text := BandsText+ aidFileMD5;
-//  var MD5String := GetFileMD5(FileName);
-//  MessageRichEdit.Lines.Add(MD5String);
-//  MessageRichEdit.Lines.Add(MD5String.ToLower);
 
   FMD5Hash := '';
   try
@@ -83,12 +77,17 @@ begin
 
       // 获取 MD5 哈希字节
       FMD5Hash := MD5.HashAsString; // 获取哈希字符串
+
+      // 延时1秒，让进度条走完
+      Sleep(1000);
       // 更新提示
       Synchronize(procedure
         begin
+
+          UpdateProgress(0);
+
           // 输出最终结果
           UpdateMessage(FMD5Hash);
-//          UpdateProgress(0); // 进度条还没跑满就会归零，取消smooth属性也不行
         end);
 
       finally

@@ -4,7 +4,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, IdHTTP, IdSSLOpenSSL, MSHTML,
-  RegularExpressions, vcl.Dialogs,
+  RegularExpressions, vcl.Dialogs, System.Zip,
   IdComponent;
 
 type
@@ -37,6 +37,7 @@ type
     procedure WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCountMax: Int64);
     procedure Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+    procedure ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
   public
     constructor Create;
     property OnWork: TWorkProc read FOnWork write FOnWork;
@@ -92,6 +93,9 @@ begin
     CheckTrIDDefsThread.Free;
   end;
 
+  // FIXME
+  FOnWork(0, 100);
+
   CheckTrIDDefsThread := TCheckTrIDDefsThread.Create;
 
   // 回调IdHTTP的OnWork，用于进度条显示
@@ -139,10 +143,12 @@ begin
   inherited Create(True); // 创建线程但不立即启动
 end;
 
+// FIXME 出现异常要返回主线程并提示
 procedure TDownloadTrIDDefsThread.Execute;
 var
   IdHTTP: TIdHTTP;
   SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  ZipFileName: string;
 const
   URL = 'https://mark0.net/download/triddefs.zip';
 begin
@@ -161,16 +167,30 @@ begin
     IdHTTP.OnWork := Work;
 
 
-    var FileName := ExtractFilePath(Paramstr(0))+'TrIDDefs.zip';
-    if FileExists(FileName) then DeleteFile(FileName);
-    var FileStream := TFileStream.Create(FileName, fmCreate);
+    ZipFileName := ExtractFilePath(Paramstr(0))+'triddefs.zip';
+    if FileExists(ZipFileName) then DeleteFile(ZipFileName);  // FIXME 当zip文件被打开时会报错
+    var FileStream := TFileStream.Create(ZipFileName, fmCreate);
     IdHTTP.Get(URL, FileStream);
     FileStream.Free;
-
+    Sleep(1000);  //暂停1秒等待进度条刷新
   finally
     IdHTTP.Free;
     SSLHandler.Free;
   end;
+
+  // 解压
+  var ZipFile: TZipFile;
+  ZipFile := TZipFile.Create;
+  try
+    ZipFile.OnProgress := ZipFileOnProgress;
+    ZipFile.Open(ZipFileName, zmRead);
+    ZipFile.ExtractAll(ExtractFilePath(Paramstr(0))); // 解压到指定目录
+
+  finally
+    ZipFile.Free;
+  end;
+
+  Sleep(1000);  //暂停1秒等待进度条刷新
 
   Synchronize(
     procedure
@@ -180,9 +200,19 @@ begin
         FOnComplete; // 触发事件
       end;
     end);
+end;
 
-  // 解压
 
+procedure TDownloadTrIDDefsThread.ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
+begin
+  Synchronize(
+    procedure
+    begin
+      if Assigned(FOnWork) then
+      begin
+        FOnWork(Position, Header.UncompressedSize);
+      end;
+    end);
 end;
 
 procedure TDownloadTrIDDefsThread.WorkBegin(ASender: TObject;
@@ -242,6 +272,8 @@ begin
     IdHTTP.Free;
     SSLHandler.Free;
   end;
+
+  Sleep(1000);  //暂停1秒等待进度条刷新
 
   Synchronize(
     procedure

@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 817
   Top = 498
   Caption = 'FileAnalysis 3.0'
-  ClientHeight = 439
+  ClientHeight = 459
   ClientWidth = 612
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -10,7 +10,6 @@ object MainForm: TMainForm
   Font.Height = -12
   Font.Name = #24494#36719#38597#40657
   Font.Style = []
-  Menu = MainMenu1
   Position = poDesigned
   OnCreate = FormCreate
   TextHeight = 17
@@ -18,12 +17,13 @@ object MainForm: TMainForm
     Left = 0
     Top = 66
     Width = 612
-    Height = 354
+    Height = 374
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
+    ExplicitHeight = 354
     object Splitter1: TSplitter
       Left = 0
       Top = 201
@@ -38,7 +38,7 @@ object MainForm: TMainForm
       Left = 0
       Top = 204
       Width = 612
-      Height = 150
+      Height = 170
       Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
@@ -69,6 +69,7 @@ object MainForm: TMainForm
       TabOrder = 0
       ViewStyle = vsReport
       ExplicitTop = 207
+      ExplicitHeight = 150
     end
     object MessageRichEdit: TRichEdit
       Left = 0
@@ -150,15 +151,16 @@ object MainForm: TMainForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 420
+    Top = 440
     Width = 612
     Height = 19
     Panels = <
       item
         Width = 0
       end>
+    ExplicitTop = 420
   end
-  object MD5ProgressBar: TProgressBar
+  object ProgressBar: TProgressBar
     Left = 0
     Top = 64
     Width = 612
@@ -166,7 +168,6 @@ object MainForm: TMainForm
     Margins.Left = 0
     Margins.Right = 0
     Align = alTop
-    Position = 100
     Smooth = True
     TabOrder = 3
   end
