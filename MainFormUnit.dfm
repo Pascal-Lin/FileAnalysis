@@ -24,8 +24,6 @@ object MainForm: TMainForm
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitTop = 64
-    ExplicitHeight = 356
     object Splitter1: TSplitter
       Left = 0
       Top = 201
@@ -70,7 +68,6 @@ object MainForm: TMainForm
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
-      ExplicitTop = 207
     end
     object MessageRichEdit: TRichEdit
       Left = 0
@@ -90,7 +87,6 @@ object MainForm: TMainForm
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitTop = -3
     end
   end
   object ToolBar1: TToolBar
@@ -3228,9 +3224,10 @@ object MainForm: TMainForm
     Images = Icon32ImageList
     Left = 576
     Top = 8
-    object U1: TMenuItem
+    object UpdateTrIDDBMenuItem: TMenuItem
       Caption = #26356#26032#25968#25454#24211'(&U)'
       ImageIndex = 0
+      OnClick = UpdateTrIDDBMenuItemClick
     end
     object N2: TMenuItem
       Caption = #26032#29256#26412#26816#27979'(&C)'

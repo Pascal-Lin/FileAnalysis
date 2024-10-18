@@ -7,7 +7,8 @@ uses
   Vcl.Styles,
   AnalyzeThd in 'AnalyzeThd.pas',
   TrIDLib in 'TrIDLib.pas',
-  Md5Thd in 'Md5Thd.pas';
+  Md5Thd in 'Md5Thd.pas',
+  UpdateTrIDDefs in 'UpdateTrIDDefs.pas';
 
 {$R *.res}
 

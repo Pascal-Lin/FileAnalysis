@@ -31,7 +31,7 @@ begin
   FMessageRichEdit := AMessageRichEdit;
   FProgressBar := AProgressBar;
 
-  FreeOnTerminate := false;
+  FreeOnTerminate := True;  //Execute执行完毕后，线程自动销毁
   inherited Create(false);  //创建后立即执行execute函数
 end;
 
