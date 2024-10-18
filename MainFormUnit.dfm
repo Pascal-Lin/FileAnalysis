@@ -68,6 +68,7 @@ object MainForm: TMainForm
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
+      ExplicitTop = 207
     end
     object MessageRichEdit: TRichEdit
       Left = 0
@@ -156,14 +157,17 @@ object MainForm: TMainForm
       item
         Width = 0
       end>
-    OnDrawPanel = StatusBar1DrawPanel
   end
   object MD5ProgressBar: TProgressBar
     Left = 0
     Top = 64
     Width = 612
     Height = 2
+    Margins.Left = 0
+    Margins.Right = 0
     Align = alTop
+    Position = 100
+    Smooth = True
     TabOrder = 3
   end
   object Icon40ImageList: TImageList

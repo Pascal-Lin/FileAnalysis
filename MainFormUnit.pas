@@ -35,13 +35,9 @@ type
     MD5ProgressBar: TProgressBar;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
-    procedure StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
-      const Rect: TRect);
     procedure FormCreate(Sender: TObject);
     procedure UpdateTrIDDBMenuItemClick(Sender: TObject);
   private
-    ProgressBar: TProgressBar;
-    ProgressBarRect: TRect;
     { Private declarations }
   public
     { Public declarations }
@@ -96,14 +92,6 @@ begin
     end;
 end;
 
-procedure TMainForm.StatusBar1DrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
-  const Rect: TRect);
-begin
-
-if Panel = StatusBar.Panels[1] then
-  ProgressBarRect := Rect;
-end;
-
 procedure TMainForm.ToolButton2Click(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
@@ -141,7 +129,18 @@ begin
 
   UpdateTrIDDefs := TUpdateTrIDDefs.Create;
   // 检查
-  UpdateTrIDDefs.CheckTrIDDefs(procedure
+  UpdateTrIDDefs.CheckTrIDDefs(
+    {这是匿名函数做第一个参数}
+    procedure(AWorkCount, AWorkCountMax: Int64)
+    begin
+      // 这里处理更新过程中的进度条显示
+      MD5ProgressBar.Max := AWorkCountMax;
+      MD5ProgressBar.Position := AWorkCount;
+//      MessageRichEdit.Lines.Add(AWorkCount.ToString+' / '+AWorkCountMax.ToString);
+    end,
+
+    {这是匿名函数做第二个参数}
+    procedure
     begin
       // 这里处理更新的逻辑
 
@@ -178,16 +177,30 @@ begin
       MessageRichEdit.Lines.Add(Msg);
       MessageRichEdit.Lines.Add('正在更新...');
 
-//      if ID_YES = Application.MessageBox(PChar(Msg+#13+'是否更新'),
-//          PChar('提示'),
-//          MB_YESNO + MB_SYSTEMMODAL) then
-//      begin
-//        // 在此处开启多线程更新数据库
-//        ShowMessage('...');
-//      end;
+//      MD5ProgressBar.Position := 0; // 进度条还没跑满就会归零，取消smooth属性也不行
 
+      // 下载数据库文件
+      UpdateTrIDDefs.DownloadTrIDDefs(
+        procedure(AWorkCount, AWorkCountMax: Int64)
+        begin
+          // 这里处理更新过程中的进度条显示
 
-    end);
+//          if MD5ProgressBar.Max <> AWorkCountMax then
+          begin
+            MD5ProgressBar.Max := AWorkCountMax;
+          end;
+
+          MD5ProgressBar.Position := AWorkCount;
+//          MessageRichEdit.Lines.Add(AWorkCount.ToString+' / '+AWorkCountMax.ToString);
+        end,
+        procedure
+        begin
+          MessageRichEdit.Lines.Add('TrID数据库更新完成！');
+//          MD5ProgressBar.Position := 0; // 进度条还没跑满就会归零，取消smooth属性也不行
+        end
+      );
+    end
+  );
 
 end;
 

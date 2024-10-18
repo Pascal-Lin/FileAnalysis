@@ -88,7 +88,7 @@ begin
         begin
           // 输出最终结果
           UpdateMessage(FMD5Hash);
-          UpdateProgress(0);
+//          UpdateProgress(0); // 进度条还没跑满就会归零，取消smooth属性也不行
         end);
 
       finally
