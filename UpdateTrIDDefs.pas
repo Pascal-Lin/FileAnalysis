@@ -93,7 +93,7 @@ begin
     CheckTrIDDefsThread.Free;
   end;
 
-  // FIXME
+  // FIXME 需要编写一个函数来统一实现修改进度条
   FOnWork(0, 100);
 
   CheckTrIDDefsThread := TCheckTrIDDefsThread.Create;

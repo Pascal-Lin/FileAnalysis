@@ -37,7 +37,7 @@ end;
 
 procedure TAnalyzeThd.Execute;
 begin
-//  FIXME  线程问题
+  // FIXME 修复AnalyzeThd的线程问题
   Synchronize(UpdateShow);
 end;
 
@@ -48,7 +48,6 @@ var
   AllPoint:integer;
   TrID_DB_Count: Integer;
 begin
-  // TODO Synchronize
 //  MessageRichEdit.Lines.Add('FileAnalysis 准备就绪');
 //  MessageRichEdit.Add(datetimetostr(now));
 //  MessageRichEdit.Lines.Add('');

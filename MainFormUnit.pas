@@ -6,7 +6,9 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
   Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons, System.Hash, IdHTTP,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs,
+  Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
+  Vcl.Bind.Editors, Data.Bind.Components;
 
 type
   TMainForm = class(TForm)
@@ -155,14 +157,14 @@ begin
       var RemoteTrIDDefsNum: Integer;
       if not TryStrToInt(UpdateTrIDDefs.TRIDDEFSNUM, RemoteTrIDDefsNum) then
       begin
-        // TODO 红色
+        // TODO 给RichEdit编写通用方法，并支持高亮
         MessageRichEdit.Lines.Add('获取远程TrID数据库信息失败！此次更新中止！');
         Exit;
       end;
 
 
 
-// TODO 子线程调用
+      // FIXME 在子线程里读取TrIDDefs
       var LocalTrIDDefsNum: Integer;
       var sOut: string;
       TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
@@ -185,7 +187,7 @@ begin
       // 有更新
       var Msg := '找到最新的TrID数据库：发布于' + UpdateTrIDDefs.FILEDATE + '，包含' + RemoteTrIDDefsNum.ToString + '个文件类型数据。';
       MessageRichEdit.Lines.Add(Msg);
-      MessageRichEdit.Lines.Add('正在更新...');
+      MessageRichEdit.Lines.Add('开始下载TrID数据库...');
 
       // 下载数据库文件
       UpdateTrIDDefs.DownloadTrIDDefs(

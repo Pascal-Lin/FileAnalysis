@@ -17,15 +17,63 @@ Coordinates=52,317,40,33
 Coordinates=0,281,40,33
 
 []
-Coordinates=136,10,49,51
+Coordinates=145,265,82,33
 Visible=True
+ExplicitSubNodes=Position
 
 [Icon32ImageList]
-Coordinates=126,80,68,33
+Coordinates=126,80,95,33
 
 [Icon40ImageList]
-Coordinates=209,265,68,33
+Coordinates=209,265,95,33
 
 [TrIDListView]
 Coordinates=10,10,97,231
+
+[MessageRichEdit]
+Coordinates=356,1,99,33
+Visible=True
+ExplicitSubNodes=
+
+[ToolButton3]
+Coordinates=356,56,74,33
+
+[ToolButton5]
+Coordinates=356,111,74,33
+
+[UpdateTrIDDBMenuItem]
+Coordinates=190,307,132,33
+
+[N2]
+Coordinates=145,155,40,33
+
+[OpenDialog1]
+Coordinates=356,166,77,33
+
+[OpenFileToolButton]
+Coordinates=350,190,113,33
+
+[UpdatePopupMenu]
+Coordinates=383,276,108,33
+
+[ToolBar1]
+Coordinates=160,230,58,33
+
+[Splitter1]
+Coordinates=260,90,55,33
+
+[ToolButton4]
+Coordinates=350,255,74,33
+
+[StatusBar1]
+Coordinates=145,78,68,51
+
+[ProgressBar]
+Coordinates=145,1,76,51
+
+[ToolButton2]
+Coordinates=350,310,74,33
+
+[(TMenuItem)]
+Coordinates=267,391,75,33
 

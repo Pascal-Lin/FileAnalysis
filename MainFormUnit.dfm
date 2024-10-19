@@ -1,5 +1,5 @@
 object MainForm: TMainForm
-  Left = 817
+  Left = 953
   Top = 498
   Caption = 'FileAnalysis 3.0'
   ClientHeight = 459
@@ -10,7 +10,7 @@ object MainForm: TMainForm
   Font.Height = -12
   Font.Name = #24494#36719#38597#40657
   Font.Style = []
-  Position = poDesigned
+  Position = poMainFormCenter
   OnCreate = FormCreate
   TextHeight = 17
   object Panel1: TPanel
@@ -23,23 +23,22 @@ object MainForm: TMainForm
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 0
-    ExplicitHeight = 354
     object Splitter1: TSplitter
       Left = 0
-      Top = 201
+      Top = 213
       Width = 612
       Height = 3
       Cursor = crVSplit
-      Align = alTop
-      ExplicitTop = 73
-      ExplicitWidth = 639
+      Align = alBottom
+      ExplicitLeft = -8
+      ExplicitTop = 222
     end
     object TrIDListView: TListView
       Left = 0
-      Top = 204
+      Top = 216
       Width = 612
-      Height = 170
-      Align = alClient
+      Height = 158
+      Align = alBottom
       BevelInner = bvNone
       BevelOuter = bvNone
       BorderStyle = bsNone
@@ -68,15 +67,13 @@ object MainForm: TMainForm
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
-      ExplicitTop = 207
-      ExplicitHeight = 150
     end
     object MessageRichEdit: TRichEdit
       Left = 0
       Top = 0
       Width = 612
-      Height = 201
-      Align = alTop
+      Height = 213
+      Align = alClient
       BevelInner = bvNone
       BevelOuter = bvNone
       Color = clWhite
@@ -89,6 +86,7 @@ object MainForm: TMainForm
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
+      ExplicitTop = -21
     end
   end
   object ToolBar1: TToolBar
@@ -158,7 +156,6 @@ object MainForm: TMainForm
       item
         Width = 0
       end>
-    ExplicitTop = 420
   end
   object ProgressBar: TProgressBar
     Left = 0

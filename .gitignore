@@ -81,5 +81,6 @@ __recovery/
 modules/
 
 # Custom
+.vscode/
 !TrIDLib.dll
 TrIDDefs.zip
