@@ -8,7 +8,9 @@ uses
   AnalyzeThd in 'AnalyzeThd.pas',
   TrIDLib in 'TrIDLib.pas',
   Md5Thd in 'Md5Thd.pas',
-  UpdateTrIDDefs in 'UpdateTrIDDefs.pas';
+  UpdateTrIDDefs in 'UpdateTrIDDefs.pas',
+  PascalLin.HTTP in 'PascalLin\PascalLin.HTTP.pas',
+  PascalLin.Utils in 'PascalLin\PascalLin.Utils.pas';
 
 {$R *.res}
 
