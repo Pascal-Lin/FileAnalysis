@@ -10,7 +10,8 @@ uses
   Md5Thd in 'Md5Thd.pas',
   UpdateTrIDDefs in 'UpdateTrIDDefs.pas',
   PascalLin.HTTP in 'PascalLin\PascalLin.HTTP.pas',
-  PascalLin.Utils in 'PascalLin\PascalLin.Utils.pas';
+  PascalLin.Utils in 'PascalLin\PascalLin.Utils.pas',
+  Utils in 'Utils.pas';
 
 {$R *.res}
 

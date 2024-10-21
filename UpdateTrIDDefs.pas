@@ -3,306 +3,179 @@
 interface
 
 uses
-  System.Classes, System.SysUtils, IdHTTP, IdSSLOpenSSL, MSHTML,
-  RegularExpressions, vcl.Dialogs, System.Zip,
-  IdComponent;
+  System.Classes, System.SysUtils, System.Zip, PascalLin.HTTP;
 
 type
   TWorkProc = reference to procedure(AWorkCount, AWorkCountMax: Int64);
 
-  TCheckTrIDDefsThread = class(TThread)
-  private
-    FOnWork: TWorkProc;
-    FOnComplete: TProc; // 用于接收响应的事件
-    AWorkCountMax: Int64; // 数据库文件大小（由IdHTTP的WorkBegin事件获取）
-  protected
-    procedure Execute; override;
-    procedure WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCountMax: Int64);
-    procedure Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-  public
-    HTML: string;
-    constructor Create;
-    property OnWork: TWorkProc read FOnWork write FOnWork;
-    property OnComplete: TProc read FOnComplete write FOnComplete;
-  end;
-
-  TDownloadTrIDDefsThread = class(TThread)
-  private
-    FOnWork: TWorkProc;
-    FOnComplete: TProc; // 用于接收响应的事件
-    AWorkCountMax: Int64; // 数据库文件大小（由IdHTTP的WorkBegin事件获取）
-  protected
-    procedure Execute; override;
-    procedure WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCountMax: Int64);
-    procedure Work(ASender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    procedure ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
-  public
-    constructor Create;
-    property OnWork: TWorkProc read FOnWork write FOnWork;
-    property OnComplete: TProc read FOnComplete write FOnComplete;
-  end;
-
   TUpdateTrIDDefs = class
   private
-    HTML: string;
-    CheckTrIDDefsThread: TCheckTrIDDefsThread;
-    DownloadTrIDDefsThread: TDownloadTrIDDefsThread;
+    function GetLocalTrIDDefsNum: Integer;
   protected
+    procedure UnZip(FileName: string; Path: string);
+    procedure ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
   public
     TRIDDEFSNUM: string; // 最新TrID数据库文件类型数量
     FILEDATE: string; // 最新TrID数据库文件的日期
-
-    procedure CheckTrIDDefs(FOnWork: TWorkProc; FOnComplete: TProc);
-    procedure DownloadTrIDDefs(FOnWork: TWorkProc; FOnComplete: TProc);
+    procedure Start;
+  published
+    OnWorkBegin: THTTPWorkBeginEvent;
+    OnWork: THTTPWorkEvent;
+    OnComplete: THTTPCompleteEvent;
+    OnNotify: THTTPNotifyEvent;
   end;
 
 implementation
 
 uses
-  TrIDLib;
+  TrIDLib, Utils;
 
-{ function }
-
-function GetTextBetweenStrings(OrginStr, LeftStr, RightStr: string): string;
-var
-  RegEx: TRegEx;
-  Match: TMatch;
-begin
-  RegEx := TRegEx.Create(LeftStr + '(.*?)' + RightStr, [roSingleLine]);
-  Match := RegEx.Match(OrginStr);
-
-  if Match.Success then
-  begin
-    Result := Match.Groups[1].Value.Trim; // 返回提取的字符串
-  end
-  else
-  begin
-    Result := '';
-  end;
-end;
 
 { TUpdateTrIDDefs }
 
-// 检测最新数据库的入口函数
-procedure TUpdateTrIDDefs.CheckTrIDDefs(FOnWork: TWorkProc; FOnComplete: TProc);
+procedure TUpdateTrIDDefs.Start;
+var
+  HTML: string;
+  FileName: string;
 begin
-  if Assigned(CheckTrIDDefsThread) then
+  FileName := ExtractFilePath(Paramstr(0))+'triddefs.zip';
+
+  if not Assigned(HTTP) then
   begin
-    CheckTrIDDefsThread.Free;
+    HTTP := THTTP.Create;
   end;
-
-  // FIXME 需要编写一个函数来统一实现修改进度条
-  FOnWork(0, 100);
-
-  CheckTrIDDefsThread := TCheckTrIDDefsThread.Create;
-
-  // 回调IdHTTP的OnWork，用于进度条显示
-  CheckTrIDDefsThread.OnWork := FOnWork;
-
-  // 线程结束后回调
-  CheckTrIDDefsThread.OnComplete := procedure
+  HTTP.OnWorkBegin := OnWorkBegin;
+  HTTP.OnWork := OnWork;
+  HTTP.OnNotify := OnNotify;
+  HTTP.OnComplete := procedure
     begin
-      HTML := CheckTrIDDefsThread.HTML;
+      // 提取HTML中的数据库信息
       TRIDDEFSNUM := GetTextBetweenStrings(HTML, '<!-- MKHP TRIDDEFSNUM-->',
         '<!-- MKHP -->');
       FILEDATE := GetTextBetweenStrings(HTML,
         '<!-- MKHP FILEDATE /homepage-mark0/download/triddefs.zip-->',
         '<!-- MKHP -->');
-      FOnComplete; // 回调
+
+      // 转换TRIDDEFSNUM
+      var RemoteTrIDDefsNum: Integer;
+      if not TryStrToInt(TRIDDEFSNUM, RemoteTrIDDefsNum) then
+      begin
+        // TODO 给RichEdit编写通用方法，并支持高亮
+        OnNotify('获取远程TrID数据库信息失败！此次更新中止！');
+        if Assigned(OnComplete) then OnComplete;
+        exit;
+      end;
+
+      // 在子线程里读取TrIDDefs
+      TThread.CreateAnonymousThread(
+        procedure
+        begin
+          Sleep(1000);
+          var LocalTrIDDefsNum := GetLocalTrIDDefsNum;
+
+          // 比对数据库
+          if (RemoteTrIDDefsNum < LocalTrIDDefsNum) then
+          begin
+            TThread.Synchronize(nil,
+              procedure
+              begin
+                OnNotify('你使用的TrID数据库可能来自于未来！作者感觉压力太大，有点害怕此次更新。');
+                if Assigned(OnComplete) then OnComplete;
+              end);
+            exit;
+          end;
+
+          if (RemoteTrIDDefsNum = LocalTrIDDefsNum) then
+          begin
+            TThread.Synchronize(nil,
+              procedure
+              begin
+                OnNotify('当前TrID数据库已经是最新的，不需要更新！');
+                if Assigned(OnComplete) then OnComplete;
+              end);
+            exit;
+          end;
+
+
+          // 找到新的数据库文件，开始下载
+          var
+          Msg := '找到最新的TrID数据库：发布于' + FILEDATE + '，包含' +
+            RemoteTrIDDefsNum.ToString + '个文件类型数据。';
+          OnNotify(Msg);
+          OnNotify('开始下载TrID数据库...');
+
+          // 下载数据库文件
+          // 上一次HTTP线程实际上并没有结束，因为这是在它的OnComplete里
+          // 这里执行ShouldDisconnect，强行断开链接并销毁线程。
+          HTTP.ShouldDisconnect;
+          HTTP.OnComplete := procedure
+            begin
+
+              OnNotify('TrID数据库已下载，开始解压...');
+
+              // 解压
+              TThread.CreateAnonymousThread(
+                procedure
+                begin
+                  Sleep(1000);
+                  UnZip(FileName, ExtractFilePath(Paramstr(0)));
+                  TThread.Synchronize(nil,
+                    procedure
+                    begin
+                      OnNotify('TrID数据库更新成功！' + #13 + '当前数据库含有' + RemoteTrIDDefsNum.ToString + '个文件类型。');
+                      if Assigned(OnComplete) then OnComplete; // 触发事件
+                    end);
+                end
+              ).Start; // 启动匿名线程
+
+
+            end;
+          HTTP.GetFile('https://mark0.net/download/triddefs.zip', FileName);
+
+        end
+      ).Start; // 启动匿名线程
+
+
     end;
-  CheckTrIDDefsThread.Start;
+  HTTP.Get('https://mark0.net/soft-trid-e.html', HTML);
+
 end;
 
-// 下载数据库的入口函数
-procedure TUpdateTrIDDefs.DownloadTrIDDefs(FOnWork: TWorkProc;
-  FOnComplete: TProc);
-begin
-  if Assigned(DownloadTrIDDefsThread) then
-  begin
-    DownloadTrIDDefsThread.Free;
-  end;
 
-  DownloadTrIDDefsThread := TDownloadTrIDDefsThread.Create;
-
-  // 回调IdHTTP的OnWork，用于进度条显示
-  DownloadTrIDDefsThread.OnWork := FOnWork;
-
-  // 线程结束后回调
-  DownloadTrIDDefsThread.OnComplete := FOnComplete;
-
-  DownloadTrIDDefsThread.Start;
-end;
-
-{ TDownloadTrIDDefsThread }
-
-constructor TDownloadTrIDDefsThread.Create;
-begin
-  FreeOnTerminate := True; // Execute执行完毕后，线程自动销毁
-  inherited Create(True); // 创建线程但不立即启动
-end;
-
-// FIXME 出现异常要返回主线程并提示
-procedure TDownloadTrIDDefsThread.Execute;
+function TUpdateTrIDDefs.GetLocalTrIDDefsNum: Integer;
 var
-  IdHTTP: TIdHTTP;
-  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
-  ZipFileName: string;
-const
-  URL = 'https://mark0.net/download/triddefs.zip';
+  sOut: string;
 begin
-  IdHTTP := TIdHTTP.Create(nil);
-  { ##############################################
-    需要OpenSSL库（libeay32.dll 和 ssleay32.dll）
-    https://openssl-library.org/source/index.html
-    https://wiki.overbyte.eu/wiki/index.php/ICS_Download
-    ############################################## }
-  SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-  SSLHandler.SSLOptions.Method := sslvTLSv1_2; // 或其他你需要的版本
-  try
-    IdHTTP.IOHandler := SSLHandler; // 设置 SSL 处理程序
+  TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));
+  // load the definitions package (TrIDDefs.TRD) from current path
+  Result := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
+end;
 
-    IdHTTP.OnWorkBegin := WorkBegin;
-    IdHTTP.OnWork := Work;
-
-
-    ZipFileName := ExtractFilePath(Paramstr(0))+'triddefs.zip';
-    if FileExists(ZipFileName) then DeleteFile(ZipFileName);  // FIXME 当zip文件被打开时会报错
-    var FileStream := TFileStream.Create(ZipFileName, fmCreate);
-    IdHTTP.Get(URL, FileStream);
-    FileStream.Free;
-    Sleep(1000);  //暂停1秒等待进度条刷新
-  finally
-    IdHTTP.Free;
-    SSLHandler.Free;
-  end;
-
-  // 解压
+procedure TUpdateTrIDDefs.UnZip(FileName: string; Path: string);
+begin
   var ZipFile: TZipFile;
   ZipFile := TZipFile.Create;
   try
     ZipFile.OnProgress := ZipFileOnProgress;
-    ZipFile.Open(ZipFileName, zmRead);
-    ZipFile.ExtractAll(ExtractFilePath(Paramstr(0))); // 解压到指定目录
-
+    ZipFile.Open(FileName, zmRead);
+    ZipFile.ExtractAll(Path); // 解压到指定目录
   finally
     ZipFile.Free;
   end;
 
-  Sleep(1000);  //暂停1秒等待进度条刷新
-
-  Synchronize(
-    procedure
-    begin
-      if Assigned(FOnComplete) then
-      begin
-        FOnComplete; // 触发事件
-      end;
-    end);
 end;
 
 
-procedure TDownloadTrIDDefsThread.ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
+procedure TUpdateTrIDDefs.ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
 begin
-  Synchronize(
-    procedure
-    begin
-      if Assigned(FOnWork) then
-      begin
-        FOnWork(Position, Header.UncompressedSize);
-      end;
-    end);
+  TThread.Synchronize(nil, procedure
+  begin
+    if Assigned(OnWorkBegin) then OnWorkBegin(Header.UncompressedSize);
+    if Assigned(OnWork) then OnWork(Position);
+  end);
 end;
 
-procedure TDownloadTrIDDefsThread.WorkBegin(ASender: TObject;
-AWorkMode: TWorkMode; AWorkCountMax: Int64);
-begin
-  Self.AWorkCountMax := AWorkCountMax
-end;
 
-procedure TDownloadTrIDDefsThread.Work(ASender: TObject; AWorkMode: TWorkMode;
-AWorkCount: Int64);
-begin
-  Synchronize(
-    procedure
-    begin
-      if Assigned(FOnWork) then
-      begin
-        FOnWork(AWorkCount, AWorkCountMax);
-      end;
-    end);
-end;
 
-{ TCheckTrIDDefsThread }
-
-// 检测最新数据库子线程
-constructor TCheckTrIDDefsThread.Create;
-begin
-  FreeOnTerminate := True; // Execute执行完毕后，线程自动销毁
-  inherited Create(True); // 创建线程但不立即启动
-end;
-
-procedure TCheckTrIDDefsThread.Execute;
-var
-  IdHTTP: TIdHTTP;
-  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
-const
-  URL = 'https://mark0.net/soft-trid-e.html';
-begin
-  HTML := '';
-  IdHTTP := TIdHTTP.Create(nil);
-  { ##############################################
-    需要OpenSSL库（libeay32.dll 和 ssleay32.dll）
-    https://openssl-library.org/source/index.html
-    https://wiki.overbyte.eu/wiki/index.php/ICS_Download
-    ############################################## }
-  SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-  SSLHandler.SSLOptions.Method := sslvTLSv1_2; // 或其他你需要的版本
-  try
-    IdHTTP.IOHandler := SSLHandler; // 设置 SSL 处理程序
-
-    IdHTTP.OnWorkBegin := WorkBegin;
-    IdHTTP.OnWork := Work;
-
-//AWorkCountMax := IdHTTP.Head('http://example.com/file.zip');
-
-    HTML := IdHTTP.Get(URL);
-  finally
-    IdHTTP.Free;
-    SSLHandler.Free;
-  end;
-
-  Sleep(1000);  //暂停1秒等待进度条刷新
-
-  Synchronize(
-    procedure
-    begin
-      if Assigned(FOnComplete) then
-      begin
-        FOnComplete; // 触发事件
-      end;
-    end);
-
-end;
-
-procedure TCheckTrIDDefsThread.WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-AWorkCountMax: Int64);
-begin
-  Self.AWorkCountMax := AWorkCountMax;
-end;
-
-procedure TCheckTrIDDefsThread.Work(ASender: TObject; AWorkMode: TWorkMode;
-AWorkCount: Int64);
-begin
-  Synchronize(
-    procedure
-    begin
-      if Assigned(FOnWork) then
-      begin
-        FOnWork(AWorkCount, AWorkCountMax);
-      end;
-    end);
-end;
 
 end.

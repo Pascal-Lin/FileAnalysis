@@ -100,20 +100,16 @@ type
   THTTP = class
   protected
     IdHTTPThread: TIdHTTPThread;
-    {}
-    FOnWorkBegin: THTTPWorkBeginEvent;
-    FOnWork: THTTPWorkEvent;
-    FOnComplete: THTTPCompleteEvent;
-    FOnDebug: THTTPDebugEvent;
   public
     procedure Get(URL: string; var HTML: string);
     procedure GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
+    procedure ShouldDisconnect;
   published
-    property OnWorkBegin: THTTPWorkBeginEvent read FOnWorkBegin
-      write FOnWorkBegin;
-    property OnWork: THTTPWorkEvent read FOnWork write FOnWork;
-    property OnComplete: THTTPCompleteEvent read FOnComplete write FOnComplete;
-    property OnDebug: THTTPDebugEvent read FOnDebug write FOnDebug;
+    OnWorkBegin: THTTPWorkBeginEvent;
+    OnWork: THTTPWorkEvent;
+    OnComplete: THTTPCompleteEvent;
+    OnDebug: THTTPDebugEvent;
+    OnNotify: THTTPNotifyEvent;
   end;
 
 implementation
@@ -149,6 +145,7 @@ begin
 
   if Assigned(IdHTTP) then IdHTTP.Free;
   if Assigned(SSLHandler) then SSLHandler.Free;
+  Terminate;
 end;
 
 // 线程互斥，需要IdHTTP.Disconnect
@@ -245,11 +242,11 @@ end;
 
 procedure THTTP.Get(URL: string; var HTML: string);
 begin
-  if Assigned(IdHTTPThread) then
+  if Assigned(IdHTTPThread) and not IdHTTPThread.Terminated then
   begin
     IdHTTPThread.Disconnect;
+    if Assigned(OnNotify) then OnNotify('已中断上次未完成的请求。开始执行新的请求...');
   end;
-
 
   IdHTTPThread := TIdHTTPThread.Create;
   IdHTTPThread.OnWorkBegin := OnWorkBegin;
@@ -261,9 +258,10 @@ end;
 
 procedure THTTP.GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
 begin
-  if Assigned(IdHTTPThread) then
+  if Assigned(IdHTTPThread) and not IdHTTPThread.Terminated then
   begin
     IdHTTPThread.Disconnect;
+    if Assigned(OnNotify) then OnNotify('已中断上次未完成的请求。开始执行新的请求...');
   end;
 
   IdHTTPThread := TIdHTTPThread.Create;
@@ -274,6 +272,15 @@ begin
   IdHTTPThread.GetFile(URL, FileName, fmCreate);
   IdHTTPThread.Start;
 
+end;
+
+procedure THTTP.ShouldDisconnect;
+begin
+  if Assigned(IdHTTPThread) then
+  begin
+    IdHTTPThread.Disconnect;
+    IdHTTPThread := nil;
+  end;
 end;
 
 

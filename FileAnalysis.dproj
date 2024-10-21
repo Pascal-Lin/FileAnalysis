@@ -138,6 +138,7 @@
         </DCCReference>
         <DCCReference Include="PascalLin\PascalLin.HTTP.pas"/>
         <DCCReference Include="PascalLin\PascalLin.Utils.pas"/>
+        <DCCReference Include="Utils.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
