@@ -3,21 +3,24 @@
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Zip, PascalLin.HTTP;
+  System.Classes, System.SysUtils, System.Zip, PascalLin.HTTP, Task;
 
 type
   TWorkProc = reference to procedure(AWorkCount, AWorkCountMax: Int64);
 
-  TUpdateTrIDDefs = class
+  TUpdateTrIDDefs = class(TTask)
   private
     function GetLocalTrIDDefsNum: Integer;
   protected
+    HTTP: THTTP;
     procedure UnZip(FileName: string; Path: string);
     procedure ZipFileOnProgress(Sender: TObject; FileName: string; Header: TZipHeader; Position: Int64);
   public
     TRIDDEFSNUM: string; // 最新TrID数据库文件类型数量
     FILEDATE: string; // 最新TrID数据库文件的日期
     procedure Start;
+    constructor Create;
+    destructor Destroy; override;
   published
     OnWorkBegin: THTTPWorkBeginEvent;
     OnWork: THTTPWorkEvent;
@@ -33,6 +36,20 @@ uses
 
 { TUpdateTrIDDefs }
 
+
+constructor TUpdateTrIDDefs.Create;
+begin
+  HTTP := THTTP.Create;
+end;
+
+destructor TUpdateTrIDDefs.Destroy;
+begin
+  // 清理代码，例如释放资源
+  HTTP.Free;
+  inherited Destroy; // 调用基类析构函数
+end;
+
+
 procedure TUpdateTrIDDefs.Start;
 var
   HTML: string;
@@ -40,10 +57,7 @@ var
 begin
   FileName := ExtractFilePath(Paramstr(0))+'triddefs.zip';
 
-  if not Assigned(HTTP) then
-  begin
-    HTTP := THTTP.Create;
-  end;
+
   HTTP.OnWorkBegin := OnWorkBegin;
   HTTP.OnWork := OnWork;
   HTTP.OnNotify := OnNotify;

@@ -132,13 +132,15 @@
         </DCCReference>
         <DCCReference Include="AnalyzeThd.pas"/>
         <DCCReference Include="TrIDLib.pas"/>
-        <DCCReference Include="Md5Thd.pas"/>
         <DCCReference Include="UpdateTrIDDefs.pas">
             <Form>$R *.res</Form>
         </DCCReference>
         <DCCReference Include="PascalLin\PascalLin.HTTP.pas"/>
         <DCCReference Include="PascalLin\PascalLin.Utils.pas"/>
         <DCCReference Include="Utils.pas"/>
+        <DCCReference Include="Task.pas"/>
+        <DCCReference Include="CalculateMD5.pas"/>
+        <DCCReference Include="PascalLin\PascalLin.MD5.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

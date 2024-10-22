@@ -54,11 +54,11 @@ var
 
 implementation
 
-uses AnalyzeThd, Md5Thd, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP, PascalLin.Utils, Utils;
+uses AnalyzeThd, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
+  PascalLin.Utils, CalculateMD5, Utils, Task;
 
-var
-  Md5Thd: TMd5Thd;
-
+// var
+// Md5Thd: TMd5Thd;
 
 {$R *.dfm}
 
@@ -83,7 +83,7 @@ begin
     end;
   HTTP.OnWork := procedure(AWorkCount: Int64)
     begin
-//       MessageRichEdit.Lines.Add('AWorkCount    '+AWorkCount.ToString);
+      // MessageRichEdit.Lines.Add('AWorkCount    '+AWorkCount.ToString);
       ProgressBar.Position := AWorkCount;
     end;
   HTTP.OnComplete := procedure
@@ -96,27 +96,38 @@ begin
           MessageRichEdit.Lines.Add('下载完成');
         end);
     end;
-//    HTTP.Get('https://mark0.net/soft-trid-e.html', html);
+  // HTTP.Get('https://mark0.net/soft-trid-e.html', html);
 
-  var FileName := ExtractFilePath(Paramstr(0))+'triddefs.exe';
-  HTTP.GetFile('https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.15_241009_x64_01.exe', FileName);
+  var
+  FileName := ExtractFilePath(Paramstr(0)) + 'triddefs.exe';
+  HTTP.GetFile
+    ('https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.15_241009_x64_01.exe',
+    FileName);
 
-//  HTTP.Get('https://mark0.net/download/triddefs.zip');
+  // HTTP.Get('https://mark0.net/download/triddefs.zip');
 
 end;
 
 procedure TMainForm.UpdateTrIDDBMenuItemClick(Sender: TObject);
-var
-  UpdateTrIDDefs: TUpdateTrIDDefs;
 begin
-  ProgressBar.Position := 0;
-  MessageRichEdit.Lines.Add('正在获取TrID数据库信息...');
+  if not(CurrentTask is TUpdateTrIDDefs) then
+  begin
+    // try
+    CurrentTask.Free;
+    // except
+    // end;
+    CurrentTask := TUpdateTrIDDefs.Create;
+  end;
 
-  UpdateTrIDDefs := TUpdateTrIDDefs.Create;
+  var
+  UpdateTrIDDefs := CurrentTask as TUpdateTrIDDefs;
+
+  ProgressBar.Position := 0;
+  MessageRichEdit.Lines.Add('Update TrID > 正在获取TrID数据库信息...');
 
   UpdateTrIDDefs.OnNotify := procedure(Msg: string)
     begin
-      MessageRichEdit.Lines.Add(Msg);
+      MessageRichEdit.Lines.Add('Update TrID > ' + Msg);
     end;
   UpdateTrIDDefs.OnWorkBegin := procedure(AWorkCountMax: Int64)
     begin
@@ -158,7 +169,7 @@ begin
 
     if FileGetAttr(OpenDialog1.FileName) = -1 then
     begin
-      ShowMessage('找不到文件' + OpenDialog1.FileName);
+      ShowMessage('Open > 找不到文件' + OpenDialog1.FileName);
       exit;
     end;
 
@@ -177,26 +188,72 @@ procedure TMainForm.ToolButton2Click(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
   begin
-    ShowMessage('请先打开一个文件！');
+//    ShowMessage('请先打开一个文件！');
+    MessageRichEdit.Lines.Add('MD5 > 需要先打开一个文件再进行MD5计算。');
     exit;
   end;
 
   if FileGetAttr(OpenDialog1.FileName) = -1 then
   begin
-    ShowMessage('找不到文件' + OpenDialog1.FileName);
+//    ShowMessage('找不到文件' + OpenDialog1.FileName);
+    MessageRichEdit.Lines.Add('MD5 > 找不到文件' + OpenDialog1.FileName);
     exit;
   end;
 
-  if Assigned(Md5Thd) then
+  if not(CurrentTask is TCalculateMD5) then
   begin
-    if GetExitCodeThread(Md5Thd.Handle, DWORD(ExitCode)) then
-    begin
-      TerminateThread(Md5Thd.Handle, 0);
-      Md5Thd.Free;
-    end;
+    // try
+    CurrentTask.Free;
+    // except
+    // end;
+    CurrentTask := TCalculateMD5.Create;
   end;
 
-  Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar);
-end;
+  var
+  CalculateMD5 := CurrentTask as TCalculateMD5;
 
-end.
+  CalculateMD5.OnReady := procedure(AWorkCountMax: Int64)
+    begin
+      MessageRichEdit.Lines.Add('MD5 > 正在计算MD5码...');
+      ProgressBar.Position := 0;
+      ProgressBar.Max := AWorkCountMax;
+    end;
+
+  CalculateMD5.OnProgress := procedure(AWorkCount: Int64)
+    begin
+      // MessageRichEdit.Lines.Add(AWorkCount.ToString);
+      ProgressBar.Position := AWorkCount;
+    end;
+
+  CalculateMD5.OnNotify := procedure(Msg: string)
+    begin
+      MessageRichEdit.Lines.Add('MD5 > ' + Msg);
+    end;
+
+  CalculateMD5.OnComplete := procedure(MD5Str: string)
+    begin
+
+      Wait(1000,
+        procedure
+        begin
+          ProgressBar.Position := 0;
+          MessageRichEdit.Lines.Add('MD5 > ' + MD5Str);
+        end);
+
+    end;
+
+  CalculateMD5.Calculate(OpenDialog1.FileName);
+
+  // if Assigned(Md5Thd) then
+  // begin
+  // if GetExitCodeThread(Md5Thd.Handle, DWORD(ExitCode)) then
+  // begin
+  // TerminateThread(Md5Thd.Handle, 0);
+  // Md5Thd.Free;
+  // end;
+  // end;
+  //
+  // Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar);
+  end;
+
+  end.

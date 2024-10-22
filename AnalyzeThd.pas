@@ -52,15 +52,15 @@ begin
 //  MessageRichEdit.Add(datetimetostr(now));
 //  MessageRichEdit.Lines.Add('');
   AllPoint := 0;
-  MessageRichEdit.Lines.Add('正在检测TrID数据库...');
+  MessageRichEdit.Lines.Add('Analyze > 正在检测TrID数据库...');
   TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));   // load the definitions package (TrIDDefs.TRD) from current path
   TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
-  MessageRichEdit.Lines.Add('找到共计 '+ TrID_DB_Count.ToString +' 个文件类型。');
+  MessageRichEdit.Lines.Add('Analyze > 找到共计 '+ TrID_DB_Count.ToString +' 个文件类型。');
 
-  MessageRichEdit.Lines.Add('准备分析目标文件：' + FileName + '');
+  MessageRichEdit.Lines.Add('Analyze > 准备分析目标文件：' + FileName + '');
   TrIDLib.SubmitFileA(FileName); // submit the file
 
-  MessageRichEdit.Lines.Add('正在匹配TrID数据库...');
+  MessageRichEdit.Lines.Add('Analyze > 正在匹配TrID数据库...');
   ret := TrIDLib.TrID_Analyze();     // perform the analysis
 
   if ret <> 0 then
@@ -68,10 +68,10 @@ begin
     ResNum := TrIDLib.GetInfo(TRID_GET_RES_NUM, 0, sOut);           // get the number of results
     if ResNum = 0 then
     begin
-      MessageRichEdit.Lines.Add('');
-      MessageRichEdit.Lines.Add('该文件在数据库中匹配不到相关信息，建议以下操作：');
-      MessageRichEdit.Lines.Add('1.用文本编辑器查看该文件。');
-      MessageRichEdit.Lines.Add('2.更新到最新的TrID数据库。');
+      MessageRichEdit.Lines.Add('Analyze > ');
+      MessageRichEdit.Lines.Add(#9 + '该文件在数据库中匹配不到相关信息，建议以下操作：');
+      MessageRichEdit.Lines.Add(#9 + '1.用文本编辑器查看该文件。');
+      MessageRichEdit.Lines.Add(#9 + '2.更新到最新的TrID数据库。');
 
       if (GetFileSize(FileName) div 1024 > 1024) then
       begin
@@ -95,7 +95,7 @@ begin
 
     end else
     begin
-      MessageRichEdit.Lines.Add('匹配到 ' + ResNum.ToString + ' 个类型，开始导出结果到表格...');
+      MessageRichEdit.Lines.Add('Analyze > 匹配到 ' + ResNum.ToString + ' 个类型，开始导出结果到表格...');
 
 //    （可选）控制显示数量
 //      if strtoint(ConfigFrm.Edit1.Text) < ResNum then ResNum := strtoint(ConfigFrm.Edit1.Text);
@@ -125,7 +125,7 @@ begin
       end;
 
     end;
-    MessageRichEdit.Lines.Add('分析完成。');
+    MessageRichEdit.Lines.Add('Analyze > 分析完成。');
 //    if ConfigFrm.Checkbox2.Checked then WriteLog;
   end;
 

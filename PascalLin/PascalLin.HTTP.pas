@@ -104,6 +104,7 @@ type
     procedure Get(URL: string; var HTML: string);
     procedure GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
     procedure ShouldDisconnect;
+    destructor Destroy; override;
   published
     OnWorkBegin: THTTPWorkBeginEvent;
     OnWork: THTTPWorkEvent;
@@ -151,9 +152,9 @@ end;
 // 线程互斥，需要IdHTTP.Disconnect
 procedure TIdHTTPThread.Disconnect;
 begin
-  Self.OnWorkBegin := nil;
-  Self.OnWork := nil;
-  Self.OnComplete := nil;
+//  OnWorkBegin := nil;
+//  OnWork := nil;
+//  OnComplete := nil;
   try
     if Assigned(FileStream) then FreeAndNil(FileStream);
     IdHTTP.Disconnect;
@@ -281,6 +282,17 @@ begin
     IdHTTPThread.Disconnect;
     IdHTTPThread := nil;
   end;
+end;
+
+destructor THTTP.Destroy;
+begin
+  if Assigned(IdHTTPThread) then
+  begin
+    if Assigned(OnNotify) then OnNotify('已中断上次未完成的请求。');
+  end;
+  ShouldDisconnect;
+
+  inherited Destroy;
 end;
 
 
