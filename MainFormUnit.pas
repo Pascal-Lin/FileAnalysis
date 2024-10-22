@@ -3,14 +3,17 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.IOUtils,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
   Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons,
   System.Hash, IdHTTP,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
-  Vcl.Bind.Editors, Data.Bind.Components, IdAuthentication;
+  Vcl.Bind.Editors, Data.Bind.Components, IdAuthentication,
+  Winapi.ActiveX, Winapi.ShellAPI;
+
+
 
 type
   TMainForm = class(TForm)
@@ -41,11 +44,15 @@ type
     procedure ToolButton2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure UpdateTrIDDBMenuItemClick(Sender: TObject);
+    procedure WMDropFiles(var Message: TWMDropFiles); message WM_DROPFILES;
   private
     { Private declarations }
+    procedure AnalyzeFile;
   public
     { Public declarations }
   end;
+
+
 
 var
   MainForm: TMainForm;
@@ -57,6 +64,62 @@ uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
 
 
 {$R *.dfm}
+
+
+// 拖拽文件
+// reference https://www.cnblogs.com/del/archive/2009/01/20/1379130.html
+procedure TMainForm.WMDropFiles(var Message: TWMDropFiles);
+var
+  p: array[0..255] of Char;
+  i,count: Integer;
+begin
+  OpenDialog1.FileName := '';
+
+  {先获取拖拽的文件总数}
+  count := DragQueryFile(message.Drop, $FFFFFFFF, nil, 0);
+  if count > 1 then
+  begin
+    MessageRichEdit.Lines.Add('Analyze > 不支持批量文件分析，请拖拽一个文件！');
+  end
+  else if count = 1 then
+  begin
+    DragQueryFile(message.Drop, 0, p, SizeOf(p));
+    var FileName := GetLnkTarget(p);
+
+    if TDirectory.Exists(FileName) then
+    begin
+      MessageRichEdit.Lines.Add('Analyze > 不能对文件夹进行分析！');
+      Exit;
+    end;
+
+    if not TFile.Exists(FileName) then
+    begin
+      MessageRichEdit.Lines.Add('Analyze > 文件不存在！' + FileName);
+      Exit;
+    end;
+
+
+//    if FileGetAttr(FileName) = -1 then
+//    begin
+//      MessageRichEdit.Lines.Add('Analyze > 这不是一个有效的文件 -> ' + FileName);
+//      Exit;
+//    end;
+
+    if MatchExt(FileName, '.url') then
+    begin
+      MessageRichEdit.Lines.Add('Analyze > 这不是一个有效的文件 -> ' + FileName);
+      Exit;
+    end;
+
+
+    OpenDialog1.FileName := FileName;
+    AnalyzeFile;
+
+
+  end;
+
+end;
+
 
 procedure TMainForm.UpdateTrIDDBMenuItemClick(Sender: TObject);
 begin
@@ -105,6 +168,9 @@ var
   TrID_DB_Count: Integer;
   sOut: string;
 begin
+  // 接受拖拽
+  DragAcceptFiles(Handle, True);
+
   TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));
   // load the definitions package (TrIDDefs.TRD) from current path
   TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
@@ -112,41 +178,51 @@ begin
   MessageRichEdit.Lines.Add('当前TrID数据库含有 ' + TrID_DB_Count.ToString + ' 个文件类型。')
 end;
 
+// 这里不应将文件名作为参数，而是直接调用OpenDialog的FileName
+// 如果以参数传入，在拖动文件的代码中可能忘记给OpenDialog赋值，使得按下MD5计算按钮的时候文件不一致。
+procedure TMainForm.AnalyzeFile;
+begin
+  TrIDListView.Clear;
+  var Analyze := TAnylyze.Create;
+  Analyze.OnNotify := procedure(Msg: string)
+    begin
+      MessageRichEdit.Lines.Add('Analyze > ' + Msg);
+    end;
+  Analyze.OnFetchOne := procedure(Match, Ext, FileType, Pts: string)
+    begin
+      with TrIDListView.Items.Add do
+      begin
+        Caption := Match;
+        SubItems.Add(Ext);
+        SubItems.Add(FileType);
+        SubItems.Add(Pts);
+      end;
+    end;
+  Analyze.Start(OpenDialog1.FileName);
+
+end;
+
 procedure TMainForm.OpenFileToolButtonClick(Sender: TObject);
-var
-  Analyze: TAnylyze;
 begin
   if OpenDialog1.execute then
   begin
 
-    if FileGetAttr(OpenDialog1.FileName) = -1 then
+//    if FileGetAttr(OpenDialog1.FileName) = -1 then
+//    begin
+//      MessageRichEdit.Lines.Add('Analyze > 找不到文件' + OpenDialog1.FileName);
+//      exit;
+//    end;
+
+    if not TFile.Exists(OpenDialog1.FileName) then
     begin
       MessageRichEdit.Lines.Add('Analyze > 找不到文件' + OpenDialog1.FileName);
-      exit;
+      OpenDialog1.FileName := '';
+      Exit;
     end;
 
-    MessageRichEdit.Clear;
-    TrIDListView.Clear;
-
     // Analyze
-    Analyze := TAnylyze.Create;
-    Analyze.OnNotify := procedure(Msg: string)
-      begin
-        MessageRichEdit.Lines.Add('Analyze > ' + Msg);
-      end;
-    Analyze.OnFetchOne := procedure(Match, Ext, FileType, Pts: string)
-      begin
-        with TrIDListView.Items.Add do
-        begin
-          Caption := Match;
-          SubItems.Add(Ext);
-          SubItems.Add(FileType);
-          SubItems.Add(Pts);
-        end;
-      end;
-    Analyze.Start(OpenDialog1.FileName);
+    AnalyzeFile;
   end;
-
 end;
 
 procedure TMainForm.ToolButton2Click(Sender: TObject);

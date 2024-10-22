@@ -45,6 +45,7 @@ begin
   if Assigned(OnNotify) then
     OnNotify('正在检测TrID数据库...');
 
+
   TThread.CreateAnonymousThread(
     procedure
     begin
@@ -87,10 +88,10 @@ begin
             begin
               if Assigned(OnNotify) then
               begin
-                OnNotify('');
-                OnNotify(#9 + '该文件在数据库中匹配不到相关信息，可以尝试以下操作：');
-                OnNotify(#9 + '1.用文本编辑器查看该文件。');
-                OnNotify(#9 + '2.更新到最新的TrID数据库。');
+                OnNotify('该文件在数据库中匹配不到相关信息，可以尝试以下操作：' + #13 +
+                  #9#9 + '1.用文本编辑器查看该文件。' + #13 +
+                  #9#9 + '2.更新到最新的TrID数据库。'
+                );
 
                 if (GetFileSize(FileName) div 1024 > 1024) then
                 begin
@@ -147,7 +148,7 @@ begin
             // Matching points
             var
             Match := format('%6s',
-              [format('%.1f%%', [ret * 100.0 / AllPoint])]);
+              [format('%.1f%%', [Pts * 100.0 / AllPoint])]);
             var
               Ext: string;
             TrIDLib.GetInfo(TRID_GET_RES_FILEEXT, ResId, Ext);

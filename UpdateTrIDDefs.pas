@@ -18,14 +18,13 @@ type
   public
     TRIDDEFSNUM: string; // 最新TrID数据库文件类型数量
     FILEDATE: string; // 最新TrID数据库文件的日期
-    procedure Start;
-    constructor Create;
-    destructor Destroy; override;
-  published
     OnWorkBegin: THTTPWorkBeginEvent;
     OnWork: THTTPWorkEvent;
     OnComplete: THTTPCompleteEvent;
     OnNotify: THTTPNotifyEvent;
+    procedure Start;
+    constructor Create;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -56,7 +55,6 @@ var
   FileName: string;
 begin
   FileName := ExtractFilePath(Paramstr(0))+'triddefs.zip';
-
 
   HTTP.OnWorkBegin := OnWorkBegin;
   HTTP.OnWork := OnWork;

@@ -131,9 +131,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="TrIDLib.pas"/>
-        <DCCReference Include="UpdateTrIDDefs.pas">
-            <Form>$R *.res</Form>
-        </DCCReference>
         <DCCReference Include="PascalLin\PascalLin.HTTP.pas"/>
         <DCCReference Include="PascalLin\PascalLin.Utils.pas"/>
         <DCCReference Include="Utils.pas"/>
@@ -141,6 +138,7 @@
         <DCCReference Include="CalculateMD5.pas"/>
         <DCCReference Include="PascalLin\PascalLin.MD5.pas"/>
         <DCCReference Include="Analyze.pas"/>
+        <DCCReference Include="UpdateTrIDDefs.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
