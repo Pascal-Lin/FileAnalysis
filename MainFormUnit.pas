@@ -28,10 +28,10 @@ type
     Icon32ImageList: TImageList;
     ToolBar1: TToolBar;
     OpenFileToolButton: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
+    CalculateMD5ToolButton: TToolButton;
+    OptionToolButton: TToolButton;
+    UpdateToolButton: TToolButton;
+    AboutToolButton: TToolButton;
     UpdatePopupMenu: TPopupMenu;
     UpdateTrIDDBMenuItem: TMenuItem;
     N2: TMenuItem;
@@ -40,11 +40,13 @@ type
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
     ProgressBar: TProgressBar;
+    AnalyzeToolButton: TToolButton;
     procedure OpenFileToolButtonClick(Sender: TObject);
-    procedure ToolButton2Click(Sender: TObject);
+    procedure CalculateMD5ToolButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure UpdateTrIDDBMenuItemClick(Sender: TObject);
     procedure WMDropFiles(var Message: TWMDropFiles); message WM_DROPFILES;
+    procedure AnalyzeToolButtonClick(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -94,7 +96,7 @@ begin
 
     if not TFile.Exists(FileName) then
     begin
-      MessageRichEdit.Lines.Add('Analyze > 文件不存在！' + FileName);
+      MessageRichEdit.Lines.Add('Analyze > 找不到文件 -> ' + FileName);
       Exit;
     end;
 
@@ -225,20 +227,41 @@ begin
   end;
 end;
 
-procedure TMainForm.ToolButton2Click(Sender: TObject);
+procedure TMainForm.AnalyzeToolButtonClick(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
   begin
-//    ShowMessage('请先打开一个文件！');
-    MessageRichEdit.Lines.Add('MD5 > 需要先打开一个文件再进行MD5计算。');
+    MessageRichEdit.Lines.Add('Analyze > 请先打开或拖拽一个文件。');
     exit;
   end;
 
-  if FileGetAttr(OpenDialog1.FileName) = -1 then
+  if not TFile.Exists(OpenDialog1.FileName) then
   begin
-//    ShowMessage('找不到文件' + OpenDialog1.FileName);
-    MessageRichEdit.Lines.Add('MD5 > 找不到文件' + OpenDialog1.FileName);
+    MessageRichEdit.Lines.Add('Analyze > 找不到文件 -> ' + OpenDialog1.FileName);
+    Exit;
+  end;
+
+  AnalyzeFile;
+end;
+
+procedure TMainForm.CalculateMD5ToolButtonClick(Sender: TObject);
+begin
+  if trim(OpenDialog1.FileName) = '' then
+  begin
+    MessageRichEdit.Lines.Add('MD5 > 请先打开或拖拽一个文件。');
     exit;
+  end;
+
+//  if FileGetAttr(OpenDialog1.FileName) = -1 then
+//  begin
+//    MessageRichEdit.Lines.Add('MD5 > 找不到文件' + OpenDialog1.FileName);
+//    exit;
+//  end;
+
+  if not TFile.Exists(OpenDialog1.FileName) then
+  begin
+    MessageRichEdit.Lines.Add('Analyze > 找不到文件 -> ' + OpenDialog1.FileName);
+    Exit;
   end;
 
   if not(CurrentTask is TCalculateMD5) then
