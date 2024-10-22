@@ -14,14 +14,10 @@ type
   private
     function GetFileSize(const FileName: String): LongInt;
   public
-    procedure Start(FileName: string);
-  published
-    // OnReady: TMD5ReadyEvent;
-    // OnProgress: TMD5ProgressEvent;
     OnNotify: TAnylyzeNotifyEvent;
-    OnFetchOne: TAnylyzeFetchOneEvent
-    // OnComplete: TMD5CompleteEvent;
-    end;
+    OnFetchOne: TAnylyzeFetchOneEvent;
+    procedure Start(FileName: string);
+  end;
 
 implementation
 

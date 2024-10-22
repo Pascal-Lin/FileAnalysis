@@ -87,7 +87,6 @@ type
     procedure Disconnect;
     procedure Get(URL: string; HTML: PString);
     procedure GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
-  published
     property OnWorkBegin: THTTPWorkBeginEvent read FOnWorkBegin
       write FOnWorkBegin;
     property OnWork: THTTPWorkEvent read FOnWork write FOnWork;
@@ -101,16 +100,15 @@ type
   protected
     IdHTTPThread: TIdHTTPThread;
   public
-    procedure Get(URL: string; var HTML: string);
-    procedure GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
-    procedure ShouldDisconnect;
-    destructor Destroy; override;
-  published
     OnWorkBegin: THTTPWorkBeginEvent;
     OnWork: THTTPWorkEvent;
     OnComplete: THTTPCompleteEvent;
     OnDebug: THTTPDebugEvent;
     OnNotify: THTTPNotifyEvent;
+    procedure Get(URL: string; var HTML: string);
+    procedure GetFile(URL: string; FileName: string; Mode: Word = fmCreate);
+    procedure ShouldDisconnect;
+    destructor Destroy; override;
   end;
 
 implementation
