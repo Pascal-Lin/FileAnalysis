@@ -37,12 +37,10 @@ type
     StatusBar1: TStatusBar;
     OpenDialog1: TOpenDialog;
     ProgressBar: TProgressBar;
-    Button1: TButton;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure UpdateTrIDDBMenuItemClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -54,59 +52,11 @@ var
 
 implementation
 
-uses AnalyzeThd, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
+uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
   PascalLin.Utils, CalculateMD5, Utils, Task;
 
-// var
-// Md5Thd: TMd5Thd;
 
 {$R *.dfm}
-
-procedure TMainForm.Button1Click(Sender: TObject);
-begin
-  ProgressBar.Position := 0;
-  MessageRichEdit.Lines.Add('开始下载');
-
-  if not Assigned(HTTP) then
-  begin
-    HTTP := THTTP.Create;
-  end;
-
-  HTTP.OnNotify := procedure(Msg: string)
-    begin
-      MessageRichEdit.Lines.Add(Msg);
-    end;
-  HTTP.OnWorkBegin := procedure(AWorkCountMax: Int64)
-    begin
-      ProgressBar.Position := 0;
-      ProgressBar.Max := AWorkCountMax;
-    end;
-  HTTP.OnWork := procedure(AWorkCount: Int64)
-    begin
-      // MessageRichEdit.Lines.Add('AWorkCount    '+AWorkCount.ToString);
-      ProgressBar.Position := AWorkCount;
-    end;
-  HTTP.OnComplete := procedure
-    begin
-      // 在子线程等待1秒钟，让进度条走满
-      PascalLin.Utils.Wait(1000,
-        procedure
-        begin
-          ProgressBar.Position := 0;
-          MessageRichEdit.Lines.Add('下载完成');
-        end);
-    end;
-  // HTTP.Get('https://mark0.net/soft-trid-e.html', html);
-
-  var
-  FileName := ExtractFilePath(Paramstr(0)) + 'triddefs.exe';
-  HTTP.GetFile
-    ('https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.15_241009_x64_01.exe',
-    FileName);
-
-  // HTTP.Get('https://mark0.net/download/triddefs.zip');
-
-end;
 
 procedure TMainForm.UpdateTrIDDBMenuItemClick(Sender: TObject);
 begin
@@ -163,25 +113,40 @@ begin
 end;
 
 procedure TMainForm.OpenFileToolButtonClick(Sender: TObject);
+var
+  Analyze: TAnylyze;
 begin
   if OpenDialog1.execute then
   begin
 
     if FileGetAttr(OpenDialog1.FileName) = -1 then
     begin
-      ShowMessage('Open > 找不到文件' + OpenDialog1.FileName);
+      MessageRichEdit.Lines.Add('Analyze > 找不到文件' + OpenDialog1.FileName);
       exit;
     end;
 
     MessageRichEdit.Clear;
     TrIDListView.Clear;
 
-    // 创建文件分析线程
-    TAnalyzeThd.Create(OpenDialog1.FileName, MessageRichEdit, TrIDListView);
-
-    // memo1.Lines.Text := HeadInfo + #13 + LineStr + langStr4 + LineStr;
-    // if configfrm.CheckBox1.Checked then button2.Click;
+    // Analyze
+    Analyze := TAnylyze.Create;
+    Analyze.OnNotify := procedure(Msg: string)
+      begin
+        MessageRichEdit.Lines.Add('Analyze > ' + Msg);
+      end;
+    Analyze.OnFetchOne := procedure(Match, Ext, FileType, Pts: string)
+      begin
+        with TrIDListView.Items.Add do
+        begin
+          Caption := Match;
+          SubItems.Add(Ext);
+          SubItems.Add(FileType);
+          SubItems.Add(Pts);
+        end;
+      end;
+    Analyze.Start(OpenDialog1.FileName);
   end;
+
 end;
 
 procedure TMainForm.ToolButton2Click(Sender: TObject);
@@ -244,16 +209,7 @@ begin
 
   CalculateMD5.Calculate(OpenDialog1.FileName);
 
-  // if Assigned(Md5Thd) then
-  // begin
-  // if GetExitCodeThread(Md5Thd.Handle, DWORD(ExitCode)) then
-  // begin
-  // TerminateThread(Md5Thd.Handle, 0);
-  // Md5Thd.Free;
-  // end;
-  // end;
-  //
-  // Md5Thd := TMd5Thd.Create(OpenDialog1.FileName, MessageRichEdit, ProgressBar);
-  end;
 
-  end.
+end;
+
+end.

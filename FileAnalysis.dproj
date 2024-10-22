@@ -130,7 +130,6 @@
             <Form>MainForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="AnalyzeThd.pas"/>
         <DCCReference Include="TrIDLib.pas"/>
         <DCCReference Include="UpdateTrIDDefs.pas">
             <Form>$R *.res</Form>
@@ -141,6 +140,7 @@
         <DCCReference Include="Task.pas"/>
         <DCCReference Include="CalculateMD5.pas"/>
         <DCCReference Include="PascalLin\PascalLin.MD5.pas"/>
+        <DCCReference Include="Analyze.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

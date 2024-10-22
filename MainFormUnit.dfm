@@ -87,15 +87,6 @@ object MainForm: TMainForm
       ScrollBars = ssVertical
       TabOrder = 1
     end
-    object Button1: TButton
-      Left = 464
-      Top = 175
-      Width = 75
-      Height = 25
-      Caption = 'HTTP Test'
-      TabOrder = 2
-      OnClick = Button1Click
-    end
   end
   object ToolBar1: TToolBar
     Left = 0

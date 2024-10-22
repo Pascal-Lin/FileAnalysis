@@ -3,7 +3,6 @@ program FileAnalysis;
 uses
   Vcl.Forms,
   MainFormUnit in 'MainFormUnit.pas' {MainForm},
-  AnalyzeThd in 'AnalyzeThd.pas',
   TrIDLib in 'TrIDLib.pas',
   UpdateTrIDDefs in 'UpdateTrIDDefs.pas',
   PascalLin.HTTP in 'PascalLin\PascalLin.HTTP.pas',
@@ -11,7 +10,8 @@ uses
   Utils in 'Utils.pas',
   Task in 'Task.pas',
   CalculateMD5 in 'CalculateMD5.pas',
-  PascalLin.MD5 in 'PascalLin\PascalLin.MD5.pas';
+  PascalLin.MD5 in 'PascalLin\PascalLin.MD5.pas',
+  Analyze in 'Analyze.pas';
 
 {$R *.res}
 
