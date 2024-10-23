@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 953
   Top = 498
-  Caption = 'FileAnalysis 3.0'
+  Caption = 'FileAnalysis'
   ClientHeight = 459
   ClientWidth = 612
   Color = clBtnFace
@@ -3240,6 +3240,7 @@ object MainForm: TMainForm
     object N2: TMenuItem
       Caption = #26032#29256#26412#26816#27979'(&C)'
       ImageIndex = 1
+      OnClick = N2Click
     end
   end
   object OpenDialog1: TOpenDialog

@@ -139,6 +139,7 @@
         <DCCReference Include="PascalLin\PascalLin.MD5.pas"/>
         <DCCReference Include="Analyze.pas"/>
         <DCCReference Include="UpdateTrIDDefs.pas"/>
+        <DCCReference Include="CheckVersion.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -166,6 +167,12 @@
             </Delphi.Personality>
             <Deployment Version="5">
                 <DeployFile LocalName="Win32\Debug\FileAnalysis.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>FileAnalysis.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Release\FileAnalysis.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>FileAnalysis.exe</RemoteName>
                         <Overwrite>true</Overwrite>

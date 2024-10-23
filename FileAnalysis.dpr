@@ -11,7 +11,8 @@ uses
   CalculateMD5 in 'CalculateMD5.pas',
   PascalLin.MD5 in 'PascalLin\PascalLin.MD5.pas',
   Analyze in 'Analyze.pas',
-  UpdateTrIDDefs in 'UpdateTrIDDefs.pas';
+  UpdateTrIDDefs in 'UpdateTrIDDefs.pas',
+  CheckVersion in 'CheckVersion.pas';
 
 {$R *.res}
 
