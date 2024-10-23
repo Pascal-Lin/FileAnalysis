@@ -12,6 +12,7 @@ object MainForm: TMainForm
   Font.Style = []
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnShow = FormShow
   TextHeight = 17
   object Panel1: TPanel
     Left = 0
@@ -3240,10 +3241,10 @@ object MainForm: TMainForm
       ImageIndex = 0
       OnClick = UpdateTrIDDBMenuItemClick
     end
-    object N2: TMenuItem
+    object CheckVersionMenuItem: TMenuItem
       Caption = #26032#29256#26412#26816#27979'(&C)'
       ImageIndex = 1
-      OnClick = N2Click
+      OnClick = CheckVersionMenuItemClick
     end
   end
   object OpenDialog1: TOpenDialog

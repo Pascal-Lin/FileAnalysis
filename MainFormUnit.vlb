@@ -44,9 +44,6 @@ Coordinates=356,111,74,33
 [UpdateTrIDDBMenuItem]
 Coordinates=190,307,132,33
 
-[N2]
-Coordinates=145,155,40,33
-
 [OpenDialog1]
 Coordinates=356,166,77,33
 
@@ -76,4 +73,7 @@ Coordinates=350,310,74,33
 
 [(TMenuItem)]
 Coordinates=267,391,75,33
+
+[CheckVersionMenuItem]
+Coordinates=145,155,40,33
 

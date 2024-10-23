@@ -33,7 +33,7 @@ type
     AboutToolButton: TToolButton;
     UpdatePopupMenu: TPopupMenu;
     UpdateTrIDDBMenuItem: TMenuItem;
-    N2: TMenuItem;
+    CheckVersionMenuItem: TMenuItem;
     MessageRichEdit: TRichEdit;
     Splitter1: TSplitter;
     StatusBar1: TStatusBar;
@@ -51,12 +51,13 @@ type
     procedure UpdateTrIDDBMenuItemClick(Sender: TObject);
     procedure WMDropFiles(var Message: TWMDropFiles); message WM_DROPFILES;
     procedure AnalyzeToolButtonClick(Sender: TObject);
-    procedure N2Click(Sender: TObject);
+    procedure CheckVersionMenuItemClick(Sender: TObject);
     procedure CopyMD5MenuItemClick(Sender: TObject);
     procedure CopyTextMenuItemClick(Sender: TObject);
     procedure AboutToolButtonClick(Sender: TObject);
     procedure RegRightButtonMenuItemClick(Sender: TObject);
     procedure OptionPopupMenuPopup(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -190,35 +191,43 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  TrID_DB_Count: Integer;
-  sOut: string;
 begin
   // 接受拖拽
   DragAcceptFiles(Handle, True);
 
   Self.Caption := MainFormCapiton;
 
-  Wait(0,
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+var
+  TrID_DB_Count: Integer;
+  sOut: string;
+begin
+  TThread.CreateAnonymousThread(
     procedure
     begin
       TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));
       // load the definitions package (TrIDDefs.TRD) from current path
       TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
-      MessageRichEdit.Lines.Add('FileAnalysis > 当前TrID数据库含有 ' + TrID_DB_Count.ToString +
-        ' 个文件类型。');
 
-      if ParamCount > 0 then
-      begin
-        OpenDialog1.FileName := Paramstr(1);
-        // 通过右键打开文件，好像都是有效文件，不需要过滤了
-        AnalyzeFile;
-      end;
-    end);
+      TThread.Synchronize(nil,
+        procedure
+        begin
+          MessageRichEdit.Lines.Add('FileAnalysis > 当前TrID数据库含有 ' +
+            TrID_DB_Count.ToString + ' 个文件类型。');
+          if ParamCount > 0 then
+          begin
+            OpenDialog1.FileName := Paramstr(1);
+            // 通过右键打开文件，好像都是有效文件，不需要过滤了
+            AnalyzeFile;
+          end;
+        end);
+    end).Start; // 启动匿名线程
 
 end;
 
-procedure TMainForm.N2Click(Sender: TObject);
+procedure TMainForm.CheckVersionMenuItemClick(Sender: TObject);
 begin
   var
   CheckVersion := TCheckVersion.Create;

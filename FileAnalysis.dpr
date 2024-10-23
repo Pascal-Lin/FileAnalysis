@@ -41,6 +41,8 @@ begin
     Application.CreateForm(TMainForm, MainForm);
     Application.Run;
     GlobalDeleteAtom(GlobalFindAtom(iAtom));
+    // DEBUG
+    // GlobalDeleteAtom(GlobalFindAtom('FileAnalysis'));
   end
   else
   begin

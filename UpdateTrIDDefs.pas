@@ -132,9 +132,8 @@ begin
                   TThread.Synchronize(nil,
                     procedure
                     begin
-                      OnNotify('TrID数据库更新成功！');
-                      OnNotify('当前TrID数据库含有' + RemoteTrIDDefsNum.ToString + '个文件类型。');
                       if Assigned(OnComplete) then OnComplete; // 触发事件
+                      OnNotify('TrID数据库更新成功！' + #13 + 'FileAnalysis > 当前TrID数据库含有 ' + RemoteTrIDDefsNum.ToString + ' 个文件类型。');
                     end);
                 end
               ).Start; // 启动匿名线程
