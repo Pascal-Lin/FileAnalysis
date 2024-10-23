@@ -62,6 +62,7 @@ type
     procedure AnalyzeFile;
   public
     { Public declarations }
+    procedure WndProc(var Message: TMessage); override;
   end;
 
 var
@@ -74,11 +75,30 @@ uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
 
 {$R *.dfm}
 
+// 接收第二实例传递过来的参数
+procedure TMainForm.WndProc(var Message: TMessage);
+var
+  FileMessage: Array [0 .. 255] of char;
+begin
+  case Message.Msg of
+    WM_MESSAGE_FILE:
+      begin
+        GlobalGetAtomName(Message.LParam, FileMessage, 255); { 接受数据到p数组中 }
+        if trim(FileMessage) <> '' then
+        begin
+          OpenDialog1.FileName := FileMessage;
+          AnalyzeFile;
+        end;
+      end;
+  end;
+  inherited WndProc(Message);
+end;
+
 // 拖拽文件
 // reference https://www.cnblogs.com/del/archive/2009/01/20/1379130.html
 procedure TMainForm.WMDropFiles(var Message: TWMDropFiles);
 var
-  p: array [0 .. 255] of Char;
+  p: array [0 .. 255] of char;
   count: Integer;
 begin
   OpenDialog1.FileName := '';
@@ -177,7 +197,7 @@ begin
   // 接受拖拽
   DragAcceptFiles(Handle, True);
 
-  Self.Caption := Self.Caption + ' ' + Utils.CurrentVersion;
+  Self.Caption := MainFormCapiton;
 
   Wait(0,
     procedure
@@ -185,14 +205,12 @@ begin
       TrIDLib.LoadDefsPack(ExtractFilePath(Paramstr(0)));
       // load the definitions package (TrIDDefs.TRD) from current path
       TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
-      // StatusBar1.Panels[0].Text := '当前TrID数据库含有 '+ TrID_DB_Count.ToString +' 个文件类型。'
-      MessageRichEdit.Lines.Add('TrID > 当前TrID数据库含有 ' + TrID_DB_Count.ToString +
+      MessageRichEdit.Lines.Add('FileAnalysis > 当前TrID数据库含有 ' + TrID_DB_Count.ToString +
         ' 个文件类型。');
-
 
       if ParamCount > 0 then
       begin
-        OpenDialog1.FileName := ParamStr(1);
+        OpenDialog1.FileName := Paramstr(1);
         // 通过右键打开文件，好像都是有效文件，不需要过滤了
         AnalyzeFile;
       end;
@@ -212,7 +230,6 @@ begin
   // CheckVersion.OnComplete
 end;
 
-
 procedure TMainForm.RegRightButtonMenuItemClick(Sender: TObject);
 var
   Reg: TRegistry;
@@ -221,13 +238,13 @@ begin
   if not IsRunAsAdmin then
   begin
     if ID_YES = Application.MessageBox
-      (PChar('修改此选项需要管理员权限！' + #13 + '是否以管理员身份重启FileAnalysis？'),
-      PChar('提示'), MB_YESNO + MB_SYSTEMMODAL) then
+      (PChar('修改此选项需要管理员权限！' + #13 + '是否以管理员身份重启FileAnalysis？'), PChar('提示'),
+      MB_YESNO + MB_SYSTEMMODAL) then
     begin
       RestartAsAdmin;
       Application.Terminate;
     end;
-      Exit;
+    Exit;
   end;
 
   Reg := TRegistry.Create;
@@ -236,8 +253,9 @@ begin
     if TMenuItem(Sender).Checked then
     begin
       Reg.DeleteKey('*\shell\FileAnalyze');
+      MessageRichEdit.Lines.Add('FileAnalysis > 文件右键菜单已取消关联。');
       // Checked会在Popup弹出的时候自动检测注册表来赋值
-      //TMenuItem(Sender).Checked := not TMenuItem(Sender).Checked;
+      // TMenuItem(Sender).Checked := not TMenuItem(Sender).Checked;
     end
     else
     begin
@@ -248,6 +266,7 @@ begin
         begin
           Reg.WriteString('', '"' + Paramstr(0) + '" "%1"');
           Reg.CloseKey;
+          MessageRichEdit.Lines.Add('FileAnalysis > 文件右键菜单已关联。');
         end;
         Reg.CloseKey;
       end;
@@ -257,11 +276,10 @@ begin
   end;
 end;
 
-
 procedure TMainForm.AboutToolButtonClick(Sender: TObject);
 begin
   MessageRichEdit.SelAttributes.Color := clBlue;
-  MessageRichEdit.Lines.Add('关于FileAnalysis >');
+  MessageRichEdit.Lines.Add('FileAnalysis >');
   MessageRichEdit.SelAttributes.Color := clBlue;
   MessageRichEdit.Lines.Add(#9 + 'FileAnalysis是一个基于TrID项目的GUI开源程序。');
   MessageRichEdit.SelAttributes.Color := clBlue;
@@ -271,7 +289,6 @@ begin
   MessageRichEdit.SelAttributes.Color := clBlue;
   MessageRichEdit.Lines.Add(#9 + 'FTrID官网：' + #13#9#9 + TrIDWebSite);
 end;
-
 
 procedure TMainForm.AnalyzeFile;
 // 这里不应将文件名作为参数，而是直接调用OpenDialog的FileName
@@ -337,7 +354,8 @@ begin
       // if Reg.ValueExists('MUIVerb') then
       if Reg.OpenKeyReadOnly('command') then
       begin
-        var value := Reg.ReadString('');
+        var
+        value := Reg.ReadString('');
         if (value = '"' + Paramstr(0) + '" "%1"') then
         begin
           // 检测到已注册了右键，打上勾

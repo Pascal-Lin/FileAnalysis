@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, PascalLin.HTTP, RegularExpressions, Winapi.ShellAPI,
-  Winapi.Windows, System.Classes, System.Math, Vcl.Forms,
+  Winapi.Windows, System.Classes, System.Math, Vcl.Forms, Winapi.Messages,
   ActiveX, ComObj, ShlObj;
 
 var
@@ -12,8 +12,12 @@ var
 
 const
   CurrentVersion = '3.0';
+  MainFormCapiton = 'FileAnalysis ' + CurrentVersion;
   GithubURL = 'https://github.com/Pascal-Lin/FileAnalysis';
   TrIDWebSite = 'https://mark0.net';
+
+  // 自定义消息：第二实例向主实例传递文件参数
+  WM_MESSAGE_FILE = WM_USER + 1;
 
 function GetTextBetweenStrings(OrginStr, LeftStr, RightStr: string): string;
 function GetLnkTarget(const ShortcutPath: string): string;

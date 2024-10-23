@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 953
   Top = 498
-  Caption = 'FileAnalysis'
+  Caption = #21040'Utils'#20013#20462#25913#26631#39064#21644#29256#26412#21495
   ClientHeight = 459
   ClientWidth = 612
   Color = clBtnFace
@@ -10,7 +10,7 @@ object MainForm: TMainForm
   Font.Height = -12
   Font.Name = #24494#36719#38597#40657
   Font.Style = []
-  Position = poMainFormCenter
+  Position = poScreenCenter
   OnCreate = FormCreate
   TextHeight = 17
   object Panel1: TPanel

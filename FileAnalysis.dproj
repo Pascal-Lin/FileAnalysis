@@ -128,7 +128,6 @@
         </DelphiCompile>
         <DCCReference Include="MainFormUnit.pas">
             <Form>MainForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="TrIDLib.pas"/>
         <DCCReference Include="PascalLin\PascalLin.HTTP.pas"/>
