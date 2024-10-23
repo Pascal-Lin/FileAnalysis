@@ -5,7 +5,7 @@ uses
   Winapi.Messages,
   Vcl.Dialogs,
   Vcl.Forms,
-  MainFormUnit in 'MainFormUnit.pas' {MainForm} ,
+  MainFormUnit in 'MainFormUnit.pas' {MainForm},
   TrIDLib in 'TrIDLib.pas',
   PascalLin.HTTP in 'PascalLin\PascalLin.HTTP.pas',
   PascalLin.Utils in 'PascalLin\PascalLin.Utils.pas',
@@ -15,7 +15,8 @@ uses
   PascalLin.MD5 in 'PascalLin\PascalLin.MD5.pas',
   Analyze in 'Analyze.pas',
   UpdateTrIDDefs in 'UpdateTrIDDefs.pas',
-  CheckVersion in 'CheckVersion.pas';
+  CheckVersion in 'CheckVersion.pas',
+  Config in 'Config.pas';
 
 {$R *.res}
 

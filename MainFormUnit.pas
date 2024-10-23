@@ -47,6 +47,7 @@ type
     RegRightButtonMenuItem: TMenuItem;
     ClearRichEditMenuItem: TMenuItem;
     N3: TMenuItem;
+    OnTheTopMenuItem: TMenuItem;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure CalculateMD5ToolButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -61,9 +62,11 @@ type
     procedure OptionPopupMenuPopup(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ClearRichEditMenuItemClick(Sender: TObject);
+    procedure OnTopMenuItemClick(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
+    procedure InitFromConfig;
   public
     { Public declarations }
     procedure WndProc(var Message: TMessage); override;
@@ -74,7 +77,7 @@ var
 
 implementation
 
-uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
+uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP, Config,
   PascalLin.Utils, CalculateMD5, Utils, Task, CheckVersion;
 
 {$R *.dfm}
@@ -198,7 +201,26 @@ begin
   // 接受拖拽
   DragAcceptFiles(Handle, True);
 
+  // 读取配置
+  TConfig.Load;
+
   Self.Caption := MainFormCapiton;
+
+end;
+
+procedure TMainForm.InitFromConfig;
+begin
+  TConfig.Load; // 加载配置文件
+
+  // 置顶
+  if TConfig.OnTop then
+  begin
+    SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE);
+  end
+  else
+  begin
+    SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE);
+  end;
 
 end;
 
@@ -207,6 +229,9 @@ var
   TrID_DB_Count: Integer;
   sOut: string;
 begin
+
+  InitFromConfig;
+
   TThread.CreateAnonymousThread(
     procedure
     begin
@@ -228,6 +253,21 @@ begin
         end);
     end).Start; // 启动匿名线程
 
+end;
+
+procedure TMainForm.OnTopMenuItemClick(Sender: TObject);
+begin
+  if TMenuItem(Sender).Checked then
+  begin
+    SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE);
+  end
+  else
+  begin
+    SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE + SWP_NOMOVE);
+  end;
+
+  TConfig.OnTop := not TMenuItem(Sender).Checked;
+  TConfig.Save;
 end;
 
 procedure TMainForm.CheckVersionMenuItemClick(Sender: TObject);
@@ -359,6 +399,10 @@ procedure TMainForm.OptionPopupMenuPopup(Sender: TObject);
 var
   Reg: TRegistry;
 begin
+
+  OnTheTopMenuItem.Checked := TConfig.OnTop;
+
+  // 关联菜单
   RegRightButtonMenuItem.Checked := False;
 
   Reg := TRegistry.Create;

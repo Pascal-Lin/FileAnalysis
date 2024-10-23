@@ -3281,5 +3281,9 @@ object MainForm: TMainForm
       Caption = #20851#32852#21040#25991#20214#21491#38190#33756#21333
       OnClick = RegRightButtonMenuItemClick
     end
+    object OnTheTopMenuItem: TMenuItem
+      Caption = #32622#39030#31383#21475
+      OnClick = OnTopMenuItemClick
+    end
   end
 end

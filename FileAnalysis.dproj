@@ -139,6 +139,7 @@
         <DCCReference Include="Analyze.pas"/>
         <DCCReference Include="UpdateTrIDDefs.pas"/>
         <DCCReference Include="CheckVersion.pas"/>
+        <DCCReference Include="Config.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
