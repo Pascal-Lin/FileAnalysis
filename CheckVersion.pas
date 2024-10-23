@@ -3,7 +3,7 @@ unit CheckVersion;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.JSON, PascalLin.HTTP, IdIcmpClient,
+  System.Classes, System.JSON, PascalLin.HTTP, IdIcmpClient,
   Winapi.Windows, Vcl.Forms, Winapi.ShellAPI;
 
 type

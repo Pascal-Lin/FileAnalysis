@@ -10,13 +10,12 @@ type
   protected
     MD5: TMD5;
   public
-    procedure Calculate(FileName: string);
-    destructor Destroy;
-  published
     OnReady: TMD5ReadyEvent;
     OnProgress: TMD5ProgressEvent;
     OnNotify: TMD5NotifyEvent;
     OnComplete: TMD5CompleteEvent;
+    procedure Calculate(FileName: string);
+    destructor Destroy; override;
   end;
 
 implementation
@@ -55,7 +54,5 @@ begin
 
   MD5.Calculate(FileName);
 end;
-
-
 
 end.

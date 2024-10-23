@@ -5,10 +5,9 @@ interface
 uses
   System.Classes, System.SysUtils;
 
-  procedure Wait(MilliSeconds: Cardinal; Callback: TProc);
+procedure Wait(MilliSeconds: Cardinal; Callback: TProc);
 
 implementation
-
 
 procedure Wait(MilliSeconds: Cardinal; Callback: TProc);
 begin
@@ -21,8 +20,7 @@ begin
         begin
           Callback;
         end);
-    end
-  ).Start; // 启动匿名线程
+    end).Start; // 启动匿名线程
 end;
 
 end.

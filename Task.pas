@@ -4,7 +4,6 @@
   在调度的时候实现多态，只允许一个任务
 }
 
-
 unit Task;
 
 interface

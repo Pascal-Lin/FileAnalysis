@@ -15,22 +15,14 @@ type
   TMD5 = class
   protected
   public
-    __Abort: Boolean;
-    procedure Calculate(FileName: string);
-    constructor Create;
-  published
     OnReady: TMD5ReadyEvent;
     OnProgress: TMD5ProgressEvent;
     OnComplete: TMD5CompleteEvent;
     OnNotify: TMD5NotifyEvent;
+    procedure Calculate(FileName: string);
   end;
 
 implementation
-
-constructor TMD5.Create;
-begin
-  __Abort := False;
-end;
 
 procedure TMD5.Calculate(FileName: string);
 var

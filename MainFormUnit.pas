@@ -3,16 +3,11 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.IOUtils, System.Hash,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons,
-  Vcl.ClipBrd, IdHTTP, Registry,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs,
-  Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
-  Vcl.Bind.Editors, Data.Bind.Components, IdAuthentication,
-  Winapi.ActiveX, Winapi.ShellAPI;
+  System.Classes, System.SysUtils, System.IOUtils, System.ImageList,
+  Winapi.Windows, Winapi.Messages, Winapi.ShellAPI,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ComCtrls, Vcl.Graphics,
+  Vcl.ExtCtrls, Vcl.ClipBrd, Vcl.ImgList, Vcl.ToolWin, Vcl.StdCtrls,
+  Registry;
 
 type
   TMainForm = class(TForm)
@@ -82,8 +77,8 @@ uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP, Config,
 
 {$R *.dfm}
 
-// 接收第二实例传递过来的参数
 procedure TMainForm.WndProc(var Message: TMessage);
+// 接收第二实例传递过来的参数
 var
   FileMessage: Array [0 .. 255] of char;
 begin
@@ -101,9 +96,9 @@ begin
   inherited WndProc(Message);
 end;
 
+procedure TMainForm.WMDropFiles(var Message: TWMDropFiles);
 // 拖拽文件
 // reference https://www.cnblogs.com/del/archive/2009/01/20/1379130.html
-procedure TMainForm.WMDropFiles(var Message: TWMDropFiles);
 var
   p: array [0 .. 255] of char;
   count: Integer;

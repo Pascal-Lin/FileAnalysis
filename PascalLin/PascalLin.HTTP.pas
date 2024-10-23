@@ -51,7 +51,7 @@ unit PascalLin.HTTP;
 interface
 
 uses
-  System.Classes, Winapi.Windows, IdHTTP, IdSSLOpenSSL, IdComponent, System.SysUtils;
+  System.Classes, IdHTTP, IdSSLOpenSSL, IdComponent, System.SysUtils;
 
 type
   // IdHTTP的OnWorkBegin只需要用到AWorkCount参数
