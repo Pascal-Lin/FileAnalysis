@@ -52,6 +52,7 @@ type
     procedure N2Click(Sender: TObject);
     procedure CopyMD5MenuItemClick(Sender: TObject);
     procedure C1Click(Sender: TObject);
+    procedure AboutToolButtonClick(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -199,9 +200,25 @@ begin
   // CheckVersion.OnComplete
 end;
 
+
+procedure TMainForm.AboutToolButtonClick(Sender: TObject);
+begin
+  MessageRichEdit.SelAttributes.Color := clBlue;
+  MessageRichEdit.Lines.Add('关于FileAnalysis >');
+  MessageRichEdit.SelAttributes.Color := clBlue;
+  MessageRichEdit.Lines.Add(#9 + 'FileAnalysis是一个基于TrID项目的GUI开源程序。');
+  MessageRichEdit.SelAttributes.Color := clBlue;
+  MessageRichEdit.Lines.Add(#9 + 'FileAnalysis Github：' + #13#9#9 + GithubURL);
+  MessageRichEdit.SelAttributes.Color := clBlue;
+  MessageRichEdit.Lines.Add(#9 + 'FTrID是一个识别文件类型的公益项目，如果你有兴趣可以加入TrID社区。');
+  MessageRichEdit.SelAttributes.Color := clBlue;
+  MessageRichEdit.Lines.Add(#9 + 'FTrID官网：' + #13#9#9 + TrIDWebSite);
+end;
+
+
+procedure TMainForm.AnalyzeFile;
 // 这里不应将文件名作为参数，而是直接调用OpenDialog的FileName
 // 如果以参数传入，在拖动文件的代码中可能忘记给OpenDialog赋值，使得按下MD5计算按钮的时候文件不一致。
-procedure TMainForm.AnalyzeFile;
 begin
   TrIDListView.Clear;
   var

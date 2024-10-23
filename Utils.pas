@@ -13,6 +13,7 @@ var
 const
   CurrentVersion = '4.0.1';
   GithubURL = 'https://github.com/Pascal-Lin/FileAnalysis';
+  TrIDWebSite = 'https://mark0.net';
 
 function GetTextBetweenStrings(OrginStr, LeftStr, RightStr: string): string;
 function GetLnkTarget(const ShortcutPath: string): string;

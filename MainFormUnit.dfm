@@ -152,6 +152,7 @@ object MainForm: TMainForm
       Top = 0
       Caption = #20851#20110
       ImageIndex = 5
+      OnClick = AboutToolButtonClick
     end
   end
   object StatusBar1: TStatusBar
