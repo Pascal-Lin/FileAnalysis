@@ -7,7 +7,7 @@ uses
   System.IOUtils,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons,
+  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons, Vcl.ClipBrd,
   System.Hash, IdHTTP,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
@@ -40,6 +40,9 @@ type
     OpenDialog1: TOpenDialog;
     ProgressBar: TProgressBar;
     AnalyzeToolButton: TToolButton;
+    RichEditPopupMenu: TPopupMenu;
+    C1: TMenuItem;
+    CopyMD5MenuItem: TMenuItem;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure CalculateMD5ToolButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -47,6 +50,8 @@ type
     procedure WMDropFiles(var Message: TWMDropFiles); message WM_DROPFILES;
     procedure AnalyzeToolButtonClick(Sender: TObject);
     procedure N2Click(Sender: TObject);
+    procedure CopyMD5MenuItemClick(Sender: TObject);
+    procedure C1Click(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -259,6 +264,11 @@ begin
   AnalyzeFile;
 end;
 
+procedure TMainForm.C1Click(Sender: TObject);
+begin
+  Clipboard.AsText := MessageRichEdit.SelText;
+end;
+
 procedure TMainForm.CalculateMD5ToolButtonClick(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
@@ -317,12 +327,21 @@ begin
         begin
           ProgressBar.Position := 0;
           MessageRichEdit.Lines.Add('MD5 > ' + MD5Str);
+
+          CopyMD5MenuItem.Caption := '复制 ' + MD5Str;
+          CopyMD5MenuItem.Hint := MD5Str;
+          CopyMD5MenuItem.Visible := True;
         end);
 
     end;
 
   CalculateMD5.Calculate(OpenDialog1.FileName);
 
+end;
+
+procedure TMainForm.CopyMD5MenuItemClick(Sender: TObject);
+begin
+  Clipboard.AsText := TMenuItem(Sender).Hint;
 end;
 
 end.

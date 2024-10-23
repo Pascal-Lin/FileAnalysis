@@ -83,6 +83,7 @@ object MainForm: TMainForm
       Font.Name = #24494#36719#38597#40657
       Font.Style = []
       ParentFont = False
+      PopupMenu = RichEditPopupMenu
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 1
@@ -3246,5 +3247,19 @@ object MainForm: TMainForm
   object OpenDialog1: TOpenDialog
     Left = 480
     Top = 8
+  end
+  object RichEditPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
+    Left = 544
+    Top = 216
+    object C1: TMenuItem
+      Caption = #22797#21046'(&C)'
+      OnClick = C1Click
+    end
+    object CopyMD5MenuItem: TMenuItem
+      Caption = #22797#21046'MD5'
+      Visible = False
+      OnClick = CopyMD5MenuItemClick
+    end
   end
 end
