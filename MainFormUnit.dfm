@@ -3255,6 +3255,13 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Left = 544
     Top = 216
+    object ClearRichEditMenuItem: TMenuItem
+      Caption = #28165#23631'(&L)'
+      OnClick = ClearRichEditMenuItemClick
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
     object CopyTextMenuItem: TMenuItem
       Caption = #22797#21046'(&C)'
       OnClick = CopyTextMenuItemClick

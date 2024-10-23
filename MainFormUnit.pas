@@ -45,6 +45,8 @@ type
     CopyMD5MenuItem: TMenuItem;
     OptionPopupMenu: TPopupMenu;
     RegRightButtonMenuItem: TMenuItem;
+    ClearRichEditMenuItem: TMenuItem;
+    N3: TMenuItem;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure CalculateMD5ToolButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -58,6 +60,7 @@ type
     procedure RegRightButtonMenuItemClick(Sender: TObject);
     procedure OptionPopupMenuPopup(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure ClearRichEditMenuItemClick(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -237,6 +240,11 @@ begin
     end;
   CheckVersion.Start;
   // CheckVersion.OnComplete
+end;
+
+procedure TMainForm.ClearRichEditMenuItemClick(Sender: TObject);
+begin
+  MessageRichEdit.Clear;
 end;
 
 procedure TMainForm.RegRightButtonMenuItemClick(Sender: TObject);
