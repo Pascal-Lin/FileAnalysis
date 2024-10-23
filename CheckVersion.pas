@@ -1,4 +1,4 @@
-unit CheckVersion;
+ï»¿unit CheckVersion;
 
 interface
 
@@ -29,24 +29,26 @@ procedure TCheckVersion.Start;
 var
   HTML: string;
 begin
-  OnNotify('ÕıÔÚ»ñÈ¡GithubÉÏµÄ°æ±¾ĞÅÏ¢...');
+  OnNotify('æ­£åœ¨è·å–Githubä¸Šçš„ç‰ˆæœ¬ä¿¡æ¯...');
 
   TThread.CreateAnonymousThread(
     procedure
     begin
       // PING Github
-      if not PingHost('api.github.com') then
-      begin
-        TThread.Synchronize(nil,
-          procedure
-          begin
-            if Assigned(OnNotify) then
-              OnNotify('ÄãµÄÍøÂçËÆºõ±»Ò»¹ÉÉñÃØÁ¦Á¿ËùÁıÕÖ£¬µ¼ÖÂÄãÎŞ·¨´¥Ãşµ½ÍâÃæµÄÊÀ½ç£¡');
-          end);
-
-        // Github Ping²»Í¨£¬ÖĞÖ¹
-        Exit;
-      end;
+//      ä¸åº”è¯¥ä½¿ç”¨PINGæ¥åˆ¤æ–­Githubæ˜¯å¦èƒ½è®¿é—®
+// TODO ä½¿ç”¨å…¶å®ƒæ–¹å¼åˆ¤æ–­èƒ½å¦è®¿é—®Github
+//      if not PingHost('api.github.com') then
+//      begin
+//        TThread.Synchronize(nil,
+//          procedure
+//          begin
+//            if Assigned(OnNotify) then
+//              OnNotify('ä½ çš„ç½‘ç»œä¼¼ä¹è¢«ä¸€è‚¡ç¥ç§˜åŠ›é‡æ‰€ç¬¼ç½©ï¼Œå¯¼è‡´ä½ æ— æ³•è§¦æ‘¸åˆ°å¤–é¢çš„ä¸–ç•Œï¼');
+//          end);
+//
+//        // Github Pingä¸é€šï¼Œä¸­æ­¢
+//        Exit;
+//      end;
 
       var
       HTTP := THTTP.Create;
@@ -59,25 +61,25 @@ begin
             case CompareVersion(CurrentVersion, TagName) of
               - 1:
                 begin
-                  OnNotify('·¢ÏÖ×îĞÂ°æ±¾£º' + TagName);
-                  OnNotify('ÇëÇ°ÍùÏîÄ¿µÄGithubÏÂÔØ£º' + GithubURL);
+                  OnNotify('å‘ç°æœ€æ–°ç‰ˆæœ¬ï¼š' + TagName);
+                  OnNotify('è¯·å‰å¾€é¡¹ç›®çš„Githubä¸‹è½½ï¼š' + GithubURL);
 
-                  if ID_YES = Application.MessageBox(PChar('·¢ÏÖ×îĞÂ°æ±¾£º' + TagName +
-                    #13 + 'ÊÇ·ñÇ°ÍùÏîÄ¿µÄGithub£¿'), PChar('ÌáÊ¾'),
+                  if ID_YES = Application.MessageBox(PChar('å‘ç°æœ€æ–°ç‰ˆæœ¬ï¼š' + TagName +
+                    #13 + 'æ˜¯å¦å‰å¾€é¡¹ç›®çš„Githubï¼Ÿ'), PChar('æç¤º'),
                     MB_YESNO + MB_SYSTEMMODAL) then
                   begin
                     ShellExecute(0, 'open', PChar(GithubURL), nil, nil, SW_SHOWNORMAL);
                   end;
                 end;
               0, 1:
-                OnNotify('µ±Ç°ÒÑÊÇ×îĞÂ°æ±¾£¡');
+                OnNotify('å½“å‰å·²æ˜¯æœ€æ–°ç‰ˆæœ¬ï¼');
             end;
           end;
         end;
 
       HTTP.Get(URI, HTML);
 
-    end).Start; // Æô¶¯ÄäÃûÏß³Ì
+    end).Start; // å¯åŠ¨åŒ¿åçº¿ç¨‹
 
 end;
 
@@ -108,8 +110,8 @@ begin
     IcmpClient := TIdIcmpClient.Create(nil);
     try
       IcmpClient.Host := AHost;
-      IcmpClient.ReceiveTimeout := 2000; // ÉèÖÃ½ÓÊÕ³¬Ê±Îª2Ãë
-      IcmpClient.Ping; // ·¢ËÍ Ping ÇëÇó
+      IcmpClient.ReceiveTimeout := 2000; // è®¾ç½®æ¥æ”¶è¶…æ—¶ä¸º2ç§’
+      IcmpClient.Ping; // å‘é€ Ping è¯·æ±‚
 
       Result := (IcmpClient.ReplyStatus.ReplyStatusType = rsEcho);
     finally
