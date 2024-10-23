@@ -138,6 +138,7 @@ object MainForm: TMainForm
       Left = 201
       Top = 0
       Caption = #35774#32622
+      DropdownMenu = OptionPopupMenu
       ImageIndex = 3
     end
     object UpdateToolButton: TToolButton
@@ -3253,14 +3254,24 @@ object MainForm: TMainForm
     AutoHotkeys = maManual
     Left = 544
     Top = 216
-    object C1: TMenuItem
+    object CopyTextMenuItem: TMenuItem
       Caption = #22797#21046'(&C)'
-      OnClick = C1Click
+      OnClick = CopyTextMenuItemClick
     end
     object CopyMD5MenuItem: TMenuItem
       Caption = #22797#21046'MD5'
       Visible = False
       OnClick = CopyMD5MenuItemClick
+    end
+  end
+  object OptionPopupMenu: TPopupMenu
+    AutoHotkeys = maManual
+    OnPopup = OptionPopupMenuPopup
+    Left = 496
+    Top = 216
+    object RegRightButtonMenuItem: TMenuItem
+      Caption = #20851#32852#21040#25991#20214#21491#38190#33756#21333
+      OnClick = RegRightButtonMenuItemClick
     end
   end
 end

@@ -122,19 +122,18 @@ begin
           HTTP.ShouldDisconnect;
           HTTP.OnComplete := procedure
             begin
-
-              OnNotify('TrID数据库已下载，开始解压...');
-
               // 解压
               TThread.CreateAnonymousThread(
                 procedure
                 begin
                   Sleep(1000);
+                  OnNotify('TrID数据库已下载，开始解压...');
                   UnZip(FileName, ExtractFilePath(Paramstr(0)));
                   TThread.Synchronize(nil,
                     procedure
                     begin
-                      OnNotify('TrID数据库更新成功！' + #13 + '当前数据库含有' + RemoteTrIDDefsNum.ToString + '个文件类型。');
+                      OnNotify('TrID数据库更新成功！');
+                      OnNotify('当前TrID数据库含有' + RemoteTrIDDefsNum.ToString + '个文件类型。');
                       if Assigned(OnComplete) then OnComplete; // 触发事件
                     end);
                 end

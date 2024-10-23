@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, PascalLin.HTTP, RegularExpressions, Winapi.ShellAPI,
-  Winapi.Windows, System.Classes, System.Math,
+  Winapi.Windows, System.Classes, System.Math, Vcl.Forms,
   ActiveX, ComObj, ShlObj;
 
 var
@@ -19,8 +19,49 @@ function GetTextBetweenStrings(OrginStr, LeftStr, RightStr: string): string;
 function GetLnkTarget(const ShortcutPath: string): string;
 function MatchExt(const FilePath: string; Ext: string): Boolean;
 function CompareVersion(const Version1, Version2: string): Integer;
+function IsRunAsAdmin: Boolean;
+procedure RestartAsAdmin;
 
 implementation
+
+
+// 检查是否管理员权限
+function IsRunAsAdmin: Boolean;
+var
+  TokenHandle: THandle;
+  Elevation: DWORD;
+  ReturnLength: DWORD;
+begin
+  Result := False;
+  if OpenProcessToken(GetCurrentProcess, TOKEN_QUERY, TokenHandle) then
+  begin
+    if GetTokenInformation(TokenHandle, TokenElevation, @Elevation, SizeOf(Elevation), ReturnLength) then
+    begin
+      Result := Elevation > 0;
+    end;
+    CloseHandle(TokenHandle);
+  end;
+end;
+
+// 以管理员权限重启
+procedure RestartAsAdmin;
+var
+  ExecInfo: TShellExecuteInfo;
+begin
+  FillChar(ExecInfo, SizeOf(ExecInfo), 0);
+  ExecInfo.cbSize := SizeOf(ExecInfo);
+  ExecInfo.Wnd := 0;
+  ExecInfo.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
+  ExecInfo.lpVerb := 'runas';
+  ExecInfo.lpFile := PChar(Application.ExeName);
+  ExecInfo.nShow := SW_SHOWNORMAL;
+  if not ShellExecuteEx(@ExecInfo) then
+  begin
+    RaiseLastOSError;
+  end;
+end;
+
+
 
 
 // 比较版本号

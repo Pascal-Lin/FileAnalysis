@@ -4,11 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.IOUtils,
+  System.IOUtils, System.Hash,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Menus, Vcl.ComCtrls,
-  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons, Vcl.ClipBrd,
-  System.Hash, IdHTTP,
+  Vcl.ExtCtrls, System.ImageList, Vcl.ImgList, Vcl.ToolWin, Vcl.Buttons,
+  Vcl.ClipBrd, IdHTTP, Registry,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, SyncObjs,
   Data.Bind.EngExt, Vcl.Bind.DBEngExt, System.Rtti, System.Bindings.Outputs,
   Vcl.Bind.Editors, Data.Bind.Components, IdAuthentication,
@@ -41,8 +41,10 @@ type
     ProgressBar: TProgressBar;
     AnalyzeToolButton: TToolButton;
     RichEditPopupMenu: TPopupMenu;
-    C1: TMenuItem;
+    CopyTextMenuItem: TMenuItem;
     CopyMD5MenuItem: TMenuItem;
+    OptionPopupMenu: TPopupMenu;
+    RegRightButtonMenuItem: TMenuItem;
     procedure OpenFileToolButtonClick(Sender: TObject);
     procedure CalculateMD5ToolButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -51,8 +53,10 @@ type
     procedure AnalyzeToolButtonClick(Sender: TObject);
     procedure N2Click(Sender: TObject);
     procedure CopyMD5MenuItemClick(Sender: TObject);
-    procedure C1Click(Sender: TObject);
+    procedure CopyTextMenuItemClick(Sender: TObject);
     procedure AboutToolButtonClick(Sender: TObject);
+    procedure RegRightButtonMenuItemClick(Sender: TObject);
+    procedure OptionPopupMenuPopup(Sender: TObject);
   private
     { Private declarations }
     procedure AnalyzeFile;
@@ -182,8 +186,16 @@ begin
       // load the definitions package (TrIDDefs.TRD) from current path
       TrID_DB_Count := TrIDLib.GetInfo(TRID_GET_DEFSNUM, 0, sOut);
       // StatusBar1.Panels[0].Text := '当前TrID数据库含有 '+ TrID_DB_Count.ToString +' 个文件类型。'
-      MessageRichEdit.Lines.Add('TrID > 当前TrID数据库含有 ' +
-        TrID_DB_Count.ToString + ' 个文件类型。');
+      MessageRichEdit.Lines.Add('TrID > 当前TrID数据库含有 ' + TrID_DB_Count.ToString +
+        ' 个文件类型。');
+
+
+      if ParamCount > 0 then
+      begin
+        OpenDialog1.FileName := ParamStr(1);
+        // 通过右键打开文件，好像都是有效文件，不需要过滤了
+        AnalyzeFile;
+      end;
     end);
 
 end;
@@ -198,6 +210,51 @@ begin
     end;
   CheckVersion.Start;
   // CheckVersion.OnComplete
+end;
+
+
+procedure TMainForm.RegRightButtonMenuItemClick(Sender: TObject);
+var
+  Reg: TRegistry;
+begin
+  // 如果没有权限则提示并执行重启
+  if not IsRunAsAdmin then
+  begin
+    if ID_YES = Application.MessageBox
+      (PChar('修改此选项需要管理员权限！' + #13 + '是否以管理员身份重启FileAnalysis？'),
+      PChar('提示'), MB_YESNO + MB_SYSTEMMODAL) then
+    begin
+      RestartAsAdmin;
+      Application.Terminate;
+    end;
+      Exit;
+  end;
+
+  Reg := TRegistry.Create;
+  Reg.RootKey := HKEY_CLASSES_ROOT;
+  try
+    if TMenuItem(Sender).Checked then
+    begin
+      Reg.DeleteKey('*\shell\FileAnalyze');
+      // Checked会在Popup弹出的时候自动检测注册表来赋值
+      //TMenuItem(Sender).Checked := not TMenuItem(Sender).Checked;
+    end
+    else
+    begin
+      if Reg.OpenKey('*\shell\FileAnalyze', True) then
+      begin
+        Reg.WriteString('MUIVerb', '使用FileAnalysis打开');
+        if Reg.OpenKey('command', True) then
+        begin
+          Reg.WriteString('', '"' + Paramstr(0) + '" "%1"');
+          Reg.CloseKey;
+        end;
+        Reg.CloseKey;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
 end;
 
 
@@ -264,6 +321,37 @@ begin
   end;
 end;
 
+procedure TMainForm.OptionPopupMenuPopup(Sender: TObject);
+var
+  Reg: TRegistry;
+begin
+  RegRightButtonMenuItem.Checked := False;
+
+  Reg := TRegistry.Create;
+  try
+    Reg.RootKey := HKEY_CLASSES_ROOT;
+    // 使用OpenKeyReadOnly不需要管理员权限
+    if Reg.OpenKeyReadOnly('*\shell\FileAnalyze') then
+    begin
+      // *\shell\FileAnalyze下至少有个默认项，是可以生效的，所以不用判断Reg.ValueExists('MUIVerb')
+      // if Reg.ValueExists('MUIVerb') then
+      if Reg.OpenKeyReadOnly('command') then
+      begin
+        var value := Reg.ReadString('');
+        if (value = '"' + Paramstr(0) + '" "%1"') then
+        begin
+          // 检测到已注册了右键，打上勾
+          RegRightButtonMenuItem.Checked := True;
+        end;
+        Reg.CloseKey;
+      end;
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+end;
+
 procedure TMainForm.AnalyzeToolButtonClick(Sender: TObject);
 begin
   if trim(OpenDialog1.FileName) = '' then
@@ -281,7 +369,7 @@ begin
   AnalyzeFile;
 end;
 
-procedure TMainForm.C1Click(Sender: TObject);
+procedure TMainForm.CopyTextMenuItemClick(Sender: TObject);
 begin
   Clipboard.AsText := MessageRichEdit.SelText;
 end;
