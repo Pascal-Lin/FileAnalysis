@@ -85,8 +85,6 @@ function TCheckVersion.GetLatestTag(const AJsonStr: string): string;
 var
   JsonValue: TJSONValue;
   JsonObject: TJSONObject;
-  JsonArray: TJSONArray;
-  i: Integer;
 begin
   Result := '';
   JsonValue := TJSONObject.ParseJSONValue(AJsonStr);
@@ -107,7 +105,6 @@ begin
   var
     IcmpClient: TIdIcmpClient;
   begin
-    Result := False;
     IcmpClient := TIdIcmpClient.Create(nil);
     try
       IcmpClient.Host := AHost;

@@ -75,7 +75,7 @@ uses Analyze, TrIDLib, UpdateTrIDDefs, PascalLin.HTTP,
 procedure TMainForm.WMDropFiles(var Message: TWMDropFiles);
 var
   p: array [0 .. 255] of Char;
-  i, count: Integer;
+  count: Integer;
 begin
   OpenDialog1.FileName := '';
 

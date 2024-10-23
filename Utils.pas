@@ -11,7 +11,7 @@ var
   HTTP: THTTP;
 
 const
-  CurrentVersion = '4.0.1';
+  CurrentVersion = '3.0';
   GithubURL = 'https://github.com/Pascal-Lin/FileAnalysis';
   TrIDWebSite = 'https://mark0.net';
 
